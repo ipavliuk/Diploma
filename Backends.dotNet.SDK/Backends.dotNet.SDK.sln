@@ -1,0 +1,44 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Backends.dotNet.SDK", "Backends.dotNet.SDK\Backends.dotNet.SDK.csproj", "{301126CD-12BF-431C-8B00-E67FCB3DE332}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Test", "Test", "{4972D7BB-C8E5-4C94-BE82-7205FDDC2BF9}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "ConsoleClient", "ConsoleClient", "{10753698-562A-4C6A-AB4A-F4BF7868446E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestClient", "TestClient\TestClient.csproj", "{181D49B7-9CCB-4E50-BCF1-840A6E7EEB56}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{4ACEC5D0-2961-4BA1-B453-C3CABB8778A8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BackendsCommon.Types", "\\psf\Home\Documents\!!!!DilpomaWork\Backends\BackendsCommon\BackendsCommon.Types\BackendsCommon.Types.csproj", "{B13C16E5-B3D1-4A07-9089-C5FE08F7FA2C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{301126CD-12BF-431C-8B00-E67FCB3DE332}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{301126CD-12BF-431C-8B00-E67FCB3DE332}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{301126CD-12BF-431C-8B00-E67FCB3DE332}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{301126CD-12BF-431C-8B00-E67FCB3DE332}.Release|Any CPU.Build.0 = Release|Any CPU
+		{181D49B7-9CCB-4E50-BCF1-840A6E7EEB56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{181D49B7-9CCB-4E50-BCF1-840A6E7EEB56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{181D49B7-9CCB-4E50-BCF1-840A6E7EEB56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{181D49B7-9CCB-4E50-BCF1-840A6E7EEB56}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B13C16E5-B3D1-4A07-9089-C5FE08F7FA2C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B13C16E5-B3D1-4A07-9089-C5FE08F7FA2C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B13C16E5-B3D1-4A07-9089-C5FE08F7FA2C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B13C16E5-B3D1-4A07-9089-C5FE08F7FA2C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{181D49B7-9CCB-4E50-BCF1-840A6E7EEB56} = {10753698-562A-4C6A-AB4A-F4BF7868446E}
+		{B13C16E5-B3D1-4A07-9089-C5FE08F7FA2C} = {4ACEC5D0-2961-4BA1-B453-C3CABB8778A8}
+	EndGlobalSection
+EndGlobal
