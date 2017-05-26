@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MongoDB.Bson.Serialization.Attributes;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +10,7 @@ namespace BackendsCommon.Types
 {
 	public class BacksObject : IBaseObject
 	{
+		[BsonId]
 		public string Id { get; set; }
 		public string Name { get; set; }
 		public DateTime? CreatedAt { get; set; }

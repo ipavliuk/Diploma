@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MongoDB.Bson.Serialization.Attributes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,7 @@ namespace Backends.Core.Model
 {
 	public class Project
 	{
+		[BsonId]
 		public string Id { get; set; }
 		public string AppId { get; set; }
 		public string P_AccountId { get; set; }
