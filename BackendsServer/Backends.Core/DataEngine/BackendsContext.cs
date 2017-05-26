@@ -38,7 +38,7 @@ namespace Backends.Core.DataEngine
 		{
 			get
 			{
-				return _db.GetCollection<Account>("Accounts");
+                return _db.GetCollection<Account>("Accounts");
 			}
 		}
 
@@ -46,8 +46,14 @@ namespace Backends.Core.DataEngine
 		{
 			get
 			{
-				return _db.GetCollection<Project>("Projects");
+                return _db.GetCollection<Project>("Projects");
 			}
 		}
-	}
+
+        internal void DropDB(string name)
+        {
+            _db.Client.DropDatabase(name);
+                
+        }
+    }
 }

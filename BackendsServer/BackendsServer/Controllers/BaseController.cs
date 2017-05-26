@@ -16,11 +16,11 @@ namespace BackendsServer.Controllers
 {
 	public class BaseController : ApiController
 	{
-		protected static string AppId_Header_Name = "X-Backs-AppId";
-		protected static string ApiKey_Header_Name = "X-Backs-ApiKey";
-		protected static string UserId_Header_Name = "X-Backs-UserId";
-		protected static string SessionToken_Header_Name = "X-Backs-SessionToken";
-		protected static string MasterKey_Header_Name = "X-Backs-MasterKey";
+		protected static string AppId_Header_Name = "X-Backends-AppId";
+		protected static string ApiKey_Header_Name = "X-Backends-ApiKey";
+		protected static string UserId_Header_Name = "X-Backends-UserId";
+		protected static string SessionToken_Header_Name = "X-Backends-SessionToken";
+		protected static string MasterKey_Header_Name = "X-Backends-MasterKey";
 		private const string XForwardedFor = "x-forwarded-for";
 		private ILog _log = new Log(typeof(BaseController));
 

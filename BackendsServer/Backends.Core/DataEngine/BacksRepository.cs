@@ -72,5 +72,10 @@ namespace Backends.Core.DataEngine
 			var filter = Builders<Project>.Filter.Eq("P_AccountId", accId);
 			return await _context.Projects.Find(filter).ToListAsync();
 		}
-	}
+
+        public void DropDB(string name)
+        {
+            _context.DropDB(name);
+        }
+    }
 }

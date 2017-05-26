@@ -21,9 +21,11 @@ namespace Backends.Core.DataEngine
 		Task UpdateProject(string projId);
 		Task removeProject(string projId);
 		Task<IList<Project>> GetAccountProjects(string accId);
-		#endregion
+        #endregion
 
-	/*	Task<string> Add(string appId, BacksObject bObject);
+        void DropDB(string name);
+
+    /*	Task<string> Add(string appId, BacksObject bObject);
 		Task<BacksObject> GetObject(string appId, string entityClass, string id);
 		Task UpdateObject(string appId, string entityClass, string id, BacksObject bObject);
 		Task RemoveObject(string appId, string entityClass, string id);
@@ -37,5 +39,5 @@ namespace Backends.Core.DataEngine
 		Task UpdateUser(string appId, string BacksUsers);
 		Task<IList<BacksUsers>> GetUsers(string appId);
 		Task RemoveUser(string appId, string id);*/
-	}
+    }
 }

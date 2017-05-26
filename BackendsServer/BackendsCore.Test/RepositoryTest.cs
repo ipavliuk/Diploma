@@ -15,10 +15,21 @@ namespace BackendsCore.Test
 									ConnectionString = "mongodb://localhost:27017",
 									Database = "testBackends"
 								});
-		[TestMethod]
+        [TestInitialize]
+        public void Initialize()
+        {
+            _repo.DropDB("testBackends");
+        }
+        [TestCleanup]
+        public void TestCleanup()
+        {
+
+        }
+
+        // Init with drop all test data 
+        [TestMethod]
 		public void CreateAccount_Test()
 		{
-
 			_repo.AddAccount(new Account
 								{
 									FirstName = "Jack",
@@ -26,8 +37,8 @@ namespace BackendsCore.Test
 									Email = "ig@mail.com",
 									ScreenName = "dudu123",
 									Pasword ="12345"
-								});
-
+								}).Wait();
 		}
+
 	}
 }
