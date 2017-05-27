@@ -66,11 +66,14 @@
     <Compile Include="ErrorCodes.cs" />
     <Compile Include="Model\BackAdminData\Account.cs" />
     <Compile Include="Model\BackAdminData\Project.cs" />
+    <Compile Include="Model\BackAdminData\AccountDto.cs" />
+    <Compile Include="Model\BackAdminData\ProjectDto.cs" />
     <Compile Include="Model\DynamicClass.cs" />
     <Compile Include="Model\InMemoryRepository.cs" />
     <Compile Include="Model\SafeCollection.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Model\IRepository.cs" />
+    <Compile Include="Services\BacksDashboardService.cs" />
     <Compile Include="Services\BacksObjectService.cs" />
     <Compile Include="Services\BacksUsersService.cs" />
     <Compile Include="Utils\CryptoHelper.cs" />

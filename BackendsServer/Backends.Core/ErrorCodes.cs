@@ -15,5 +15,6 @@ namespace Backends.Core
 		InvalidCredentials = 4,
 		SessionIsNotFound = 5,
 		NotAllMandatFields = 6,
+		DuplicateLogin = 7
 	}
 }

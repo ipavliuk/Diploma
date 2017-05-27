@@ -55,5 +55,10 @@ namespace Backends.Core.DataEngine
             _db.Client.DropDatabase(name);
                 
         }
-    }
+
+		public void DropCollection(string name)
+		{
+			_db.DropCollection(name);
+		}
+	}
 }
