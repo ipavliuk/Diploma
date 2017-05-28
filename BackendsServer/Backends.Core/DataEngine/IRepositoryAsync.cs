@@ -5,6 +5,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BackendsCommon.Types.BacksModel;
+using MongoDB.Bson;
 
 namespace Backends.Core.DataEngine
 {
@@ -25,6 +27,15 @@ namespace Backends.Core.DataEngine
 		Task RemoveProject(string projId);
 		Task<IList<Project>> GetAccountProjects(string accId);
 		Task<IList<Project>> GetAllProject();
+
+
+		#endregion
+
+		#region Backends Projects
+
+		Task Add_Schema(BacksProjectSchema schema);
+		void CreateCollection(string name, BsonDocument validator);
+		
 
 		#endregion
 

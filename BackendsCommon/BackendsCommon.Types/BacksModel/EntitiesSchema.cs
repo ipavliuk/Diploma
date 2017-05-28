@@ -4,15 +4,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MongoDB.Bson;
 
 namespace BackendsCommon.Types
 {
+	
 	public class EntitiesSchema : IEnumerable<KeyValuePair<string, string>>
 	{
-		public string Id { get; set; }
-
-		public string AppId { get; set; }
-
 		public Dictionary<string, string> ColumnTypeMapping { get; set; }
 
 		public IEnumerator<KeyValuePair<string, string>> GetEnumerator()

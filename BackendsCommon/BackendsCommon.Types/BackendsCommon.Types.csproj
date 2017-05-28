@@ -57,6 +57,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BacksModel\BacksObject.cs" />
+    <Compile Include="BacksModel\BacksProjectSchema.cs" />
     <Compile Include="BacksModel\BacksSessions.cs" />
     <Compile Include="BacksModel\BacksUsers.cs" />
     <Compile Include="BacksModel\EntitiesSchema.cs" />

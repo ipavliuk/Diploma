@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BackendsCommon.Types.BacksModel;
 
 namespace Backends.Core.DataEngine
 {
@@ -50,7 +51,16 @@ namespace Backends.Core.DataEngine
 			}
 		}
 
-        internal void DropDB(string name)
+		public IMongoCollection<BacksProjectSchema> _Schema
+		{
+			get
+			{
+				return _db.GetCollection<BacksProjectSchema>("_Schema");
+			}
+		}
+
+
+		internal void DropDB(string name)
         {
             _db.Client.DropDatabase(name);
                 
@@ -59,6 +69,13 @@ namespace Backends.Core.DataEngine
 		public void DropCollection(string name)
 		{
 			_db.DropCollection(name);
+		}
+
+		public void CreateCollection(string name, BsonDocument validator)
+		{
+			_db.CreateCollectionAsync(name);
+			_db.RunCommand<BsonDocument>(new BsonDocumentCommand<BsonDocument>(validator));
+
 		}
 	}
 }

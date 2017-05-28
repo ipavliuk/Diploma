@@ -9,7 +9,16 @@ namespace Backends.Core.Model
 {
 	public class AccountDto
 	{
+		public AccountDto()
+		{
+			Projects = new List<ProjectDto>();
+		}
 		public string Id { get; set; }
+		public string FirstName { get; set; }
+
+		public string LastName { get; set; }
+
+		public string email { get; set; }
 
 		public List<ProjectDto> Projects{ get; set; }
 	}

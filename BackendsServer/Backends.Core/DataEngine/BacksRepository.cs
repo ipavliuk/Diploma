@@ -7,6 +7,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BackendsCommon.Logging;
+using BackendsCommon.Types.BacksModel;
+using MongoDB.Bson;
 
 namespace Backends.Core.DataEngine
 {
@@ -197,6 +199,32 @@ namespace Backends.Core.DataEngine
 			catch (Exception e)
 			{
 				_log.Error("Exception in GetAllProject", e);
+				throw;
+			}
+		}
+
+		public async Task Add_Schema(BacksProjectSchema schema)
+		{
+			try
+			{
+				await _context._Schema.InsertOneAsync(schema);
+			}
+			catch (Exception e)
+			{
+				_log.Error("Exception in GetAllProject", e);
+				throw;
+			}
+		}
+
+		public void CreateCollection(string name, BsonDocument validator)
+		{
+			try
+			{
+				_context.CreateCollection(name, validator);
+			}
+			catch (Exception e)
+			{
+				_log.Error("Exception in CreateCollection", e);
 				throw;
 			}
 		}

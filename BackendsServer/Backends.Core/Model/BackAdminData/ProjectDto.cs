@@ -15,7 +15,9 @@ namespace Backends.Core.Model.BackAdminData
 
 		public string AppId { get; set; }
 
-		public string ApiKey { get; set; }
+		public string ApiKeyAccess { get; set; }
+
+		public string MasterKeyAccess { get; set; }
 
 		public string Settings { get; set; }
 
