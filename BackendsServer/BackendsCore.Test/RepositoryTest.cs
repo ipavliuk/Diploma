@@ -7,6 +7,7 @@ using Backends.Core.Config;
 using Backends.Core.Model;
 using BackendsCommon.Types;
 using BackendsCommon.Types.BacksModel;
+using Backends.Core.Services;
 
 namespace BackendsCore.Test
 {
@@ -276,77 +277,115 @@ namespace BackendsCore.Test
 			Assert.IsTrue(projs.Count==2, "GetAccountProjects_Test get different object");
 			
 		}
+        #region _Schema test
+        private readonly BacksProjectSchema _schema = new BacksProjectSchema()
+        {
+            EntityColumnTypeMapping = new Dictionary<string, EntitiesSchema>()
+                    {
+                        {
+                            "_User", new EntitiesSchema()
+                            {
+                                ColumnTypeMapping = new Dictionary<string, string>()
+                                {
+                                    { "_id", BacksDataType.BString},
+                                    { "userName", BacksDataType.BString},
+                                    { "paswword", BacksDataType.BString},
+                                    { "createdAt", BacksDataType.BTime},
+                                    { "updatedAt", BacksDataType.BTime},
+                                    { "userData", BacksDataType.BObject}
+                                }
+                            }
+                        },
+                        {
+                            "_Session", new EntitiesSchema()
+                            {
+                                ColumnTypeMapping = new Dictionary<string, string>()
+                                {
+                                    { "_id", BacksDataType.BString},
+                                    { "sessionToken", BacksDataType.BString},
+                                    { "createdAt", BacksDataType.BTime},
+                                    { "updatedAt", BacksDataType.BTime},
+                                    { "expiredAt", BacksDataType.BTime},
+                                    { "installationId", BacksDataType.BString},
+                                    { "sessionData", BacksDataType.BString},
+                                    { "previleges", BacksDataType.BBoolean},
+                                    { "_p_user", BacksDataType.BPointer}
+                                }
+                            }
+                        },
+                        {
+                            "_Roles", new EntitiesSchema()
+                            {
+                                ColumnTypeMapping = new Dictionary<string, string>()
+                                {
+                                    { "_id", BacksDataType.BString},
+                                    { "name", BacksDataType.BString},
+                                    { "paswword", BacksDataType.BString},
+                                    { "createdAt", BacksDataType.BTime},
+                                    { "updatedAt", BacksDataType.BTime},
+                                    { "userData", BacksDataType.BObject}
+                                }
+                            }
+                        }
 
-		[TestMethod]
-		public void Add_Schema_Test()
+                    }
+        };
+
+        [TestMethod]
+        public void Add_Schema_Test()
+        {
+            Project proj = _repo.GetAllProject().Result.FirstOrDefault();
+            Assert.IsNotNull(proj, "RemoveProject_Test=>Add_Schema_Test failed to get object");
+
+            //create Schema
+            _schema.AppId = proj.Id;
+
+            _repo.Add_Schema(_schema).Wait();
+            Assert.AreNotEqual(_schema.Id, null, "Add_Schema_Test=> failed to create porject's _schema");
+        }
+
+        [TestMethod]
+        public void Get_Schema_Test()
+        {
+            _repo.DropCollection("_Schema");
+            Project proj = _repo.GetAllProject().Result.FirstOrDefault();
+            Assert.IsNotNull(proj, "RemoveProject_Test=>Add_Schema_Test failed to get object");
+
+            //create Schema
+            _schema.AppId = proj.Id;
+
+            _repo.Add_Schema(_schema).Wait();
+            Assert.AreNotEqual(_schema.Id, null, "Get_Schema_Test=> failed to create porject's _schema");
+
+            BacksProjectSchema schema = _repo.GetSchema(proj.Id).Result;
+
+            Assert.IsNotNull(schema, "Get_Schema_Test failed to get schema");
+            Assert.AreEqual(schema.Id, _schema.Id, "Get_Schema_Test get different object");
+        }
+
+
+		/*[TestMethod]
+		public void ValidateSchema_Test()
 		{
+			_repo.DropCollection("_Schema");
 			Project proj = _repo.GetAllProject().Result.FirstOrDefault();
-			Assert.IsNotNull(proj, "RemoveProject_Test=>GetAllAccounts failed to get object");
+			Assert.IsNotNull(proj, "RemoveProject_Test=>Add_Schema_Test failed to get object");
 
 			//create Schema
+			_schema.AppId = proj.Id;
 
-			#region Default _Schema object
+			_repo.Add_Schema(_schema).Wait();
+			Assert.AreNotEqual(_schema.Id, null, "Get_Schema_Test=> failed to create porject's _schema");
 
-			var schema = new BacksProjectSchema()
+			var handler = new SchemaHandler(null);
+
+			var user = new BacksUsers()
 			{
-				AppId = proj.Id,
-				EntityColumnTypeMapping = new Dictionary<string, EntitiesSchema>()
-					{
-						{
-							"_User", new EntitiesSchema()
-							{
-								ColumnTypeMapping = new Dictionary<string, string>()
-								{
-									{ "_id", BacksDataType.BString},
-									{ "userName", BacksDataType.BString},
-									{ "paswword", BacksDataType.BString},
-									{ "createdAt", BacksDataType.BTime},
-									{ "updatedAt", BacksDataType.BTime},
-									{ "userData", BacksDataType.BObject}
-								}
-							}
-						},
-						{
-							"_Session", new EntitiesSchema()
-							{
-								ColumnTypeMapping = new Dictionary<string, string>()
-								{
-									{ "_id", BacksDataType.BString},
-									{ "sessionToken", BacksDataType.BString},
-									{ "createdAt", BacksDataType.BTime},
-									{ "updatedAt", BacksDataType.BTime},
-									{ "expiredAt", BacksDataType.BTime},
-									{ "installationId", BacksDataType.BString},
-									{ "sessionData", BacksDataType.BString},
-									{ "previleges", BacksDataType.BBoolean},
-									{ "_p_user", BacksDataType.BPointer}
-								}
-							}
-						},
-						{
-							"_Roles", new EntitiesSchema()
-							{
-								ColumnTypeMapping = new Dictionary<string, string>()
-								{
-									{ "_id", BacksDataType.BString},
-									{ "name", BacksDataType.BString},
-									{ "paswword", BacksDataType.BString},
-									{ "createdAt", BacksDataType.BTime},
-									{ "updatedAt", BacksDataType.BTime},
-									{ "userData", BacksDataType.BObject}
-								}
-							}
-						}
-
-					}
+				Data = new 
 			};
+			handler.IsSchemaValid<>
+		}*/
+        #endregion
 
-			#endregion
-
-
-			_repo.Add_Schema(schema).Wait();
-
-			Assert.AreNotEqual(schema.Id, null, "GetAccountProjects_Test=> failed to create Project2");
-		}
-	}
+    }
 }

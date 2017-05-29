@@ -34,7 +34,8 @@ namespace Backends.Core.DataEngine
 		#region Backends Projects
 
 		Task Add_Schema(BacksProjectSchema schema);
-		void CreateCollection(string name, BsonDocument validator);
+        Task<BacksProjectSchema> GetSchema(string appId);
+        void CreateCollection(string name, BsonDocument validator);
 		
 
 		#endregion

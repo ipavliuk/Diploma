@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BackendsCommon.Types.BacksModel;
+using System;
 using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
@@ -27,5 +28,7 @@ namespace Backends.Core.Model.BackAdminData
 
 		public DateTime CreatedAt { get; set; }
 
-	}
+        public BacksProjectSchema Schema { get; set; }
+
+    }
 }

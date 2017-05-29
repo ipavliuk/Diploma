@@ -16,12 +16,15 @@ namespace Backends.Core.Services
 	public class BacksDashboardService
 	{
 		private readonly IRepositoryAsync _repo;
+        private readonly SchemaHandler _handler;
 		private ILog _log = new Log(typeof(BacksDashboardService));
 
 		public BacksDashboardService(IRepositoryAsync repo)
 		{
 			_repo = repo;
-			Mapper.Initialize(cfg =>
+            _handler = new SchemaHandler(_repo);
+
+            Mapper.Initialize(cfg =>
 			{
 				cfg.CreateMap<Account, AccountDto>();
 				cfg.CreateMap<Project, ProjectDto>();
@@ -117,66 +120,20 @@ namespace Backends.Core.Services
 				{
 					error = BacksErrorCodes.ProjectCreationFailed;
 				}
-				//Create basic entities schema: _User, _Sessions, 
-				var schema = new BacksProjectSchema()
-				{
-					AppId = project.Id,
-					EntityColumnTypeMapping = new Dictionary<string, EntitiesSchema>()
-					{
-						{
-							"_User", new EntitiesSchema()
-							{
-								ColumnTypeMapping = new Dictionary<string, string>()
-								{
-									{ "_id", BacksDataType.BString},
-									{ "userName", BacksDataType.BString},
-									{ "paswword", BacksDataType.BString},
-									{ "createdAt", BacksDataType.BTime},
-									{ "updatedAt", BacksDataType.BTime},
-									{ "userData", BacksDataType.BObject}
-								}
-							}
-						},
-						{
-							"_Session", new EntitiesSchema()
-							{
-								ColumnTypeMapping = new Dictionary<string, string>()
-								{
-									{ "_id", BacksDataType.BString},
-									{ "sessionToken", BacksDataType.BString},
-									{ "createdAt", BacksDataType.BTime},
-									{ "updatedAt", BacksDataType.BTime},
-									{ "expiredAt", BacksDataType.BTime},
-									{ "installationId", BacksDataType.BString},
-									{ "sessionData", BacksDataType.BString},
-									{ "previleges", BacksDataType.BBoolean},
-									{ "_p_user", BacksDataType.BPointer}
-								}
-							}
-						},
-						{
-							"_Roles", new EntitiesSchema()
-							{
-								ColumnTypeMapping = new Dictionary<string, string>()
-								{
-									{ "_id", BacksDataType.BString},
-									{ "name", BacksDataType.BString},
-									{ "paswword", BacksDataType.BString},
-									{ "createdAt", BacksDataType.BTime},
-									{ "updatedAt", BacksDataType.BTime},
-									{ "userData", BacksDataType.BObject}
-								}
-							}
-						}
+                //Create basic entities schema: _User, _Sessions, 
+                var schema = SchemaHandler.CreateDefaultSchema(project.Id);
 
-					}
-
-				};
-				_repo.Add_Schema(schema).Wait();
+                _repo.Add_Schema(schema).Wait();
 				//_Schema, 
-
+                if(schema.Id == null )
+                {
+                    _log.Error("Error creating schema");
+                    error = BacksErrorCodes.SystemError;
+                    return null;
+                }
 
 				var mappedProjetcs = Mapper.Map<Project, ProjectDto>(project);
+                mappedProjetcs.Schema = schema;
 				return mappedProjetcs;
 			}
 			catch (Exception e)
@@ -188,14 +145,41 @@ namespace Backends.Core.Services
 			
 			return null;
 		}
-		public ProjectDto GeProject()
+		public ProjectDto GetProject(string projId, out BacksErrorCodes error)
 		{
-			return null;
+			error = BacksErrorCodes.Ok;
+			try
+			{
+				var project = _repo.GetProject(projId).Result;
+				var mappedProjetcs = Mapper.Map<Project, ProjectDto>(project);
+
+				//GetSchema
+			}
+			catch (Exception e)
+			{
+				_log.Error("GetProject exception : ", e);
+				error = BacksErrorCodes.SystemError;
+			}
+				return null;
 		}
 
 
-		public List<ProjectDto> GetUserProjects()
+		public List<ProjectDto> GetUserProjects(string acc_id, out BacksErrorCodes error)
 		{
+			error = BacksErrorCodes.Ok;
+			try
+			{
+				var projects = _repo.GetAccountProjects(acc_id).Result;
+				var mappedProjetcs = Mapper.Map<List<Project>, List<ProjectDto>>(projects.ToList());
+
+				//GetSchema
+			}
+			catch (Exception e)
+			{
+				_log.Error("GetUserProjects exception : ", e);
+				error = BacksErrorCodes.SystemError;
+			}
+
 			return null;
 		}
 

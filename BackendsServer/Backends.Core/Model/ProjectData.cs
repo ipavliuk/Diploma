@@ -21,5 +21,23 @@ namespace Backends.Core.Model
 		public const string BObject = "object";
 		public const string BPointer = "pointer";
 		public const string BBoolean = "boolean";
+
+		/*public static string ToBacksType(Type type)
+		{
+			string sType = null;
+			switch (type.Name)
+			{
+				/*case System.String:
+					sType = BString;
+				case System.Int32:
+					sType = BInt;
+
+				case System.Boolean:
+					sType = BBoolean;
+				
+			}
+		}*/
 	}
+
+	
 }

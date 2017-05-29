@@ -12,13 +12,18 @@ namespace BackendsCommon.Types.BacksModel
 	
 	public class BacksProjectSchema //: IEnumerable<KeyValuePair<string, EntitiesSchema>>
 	{
+        public BacksProjectSchema()
+        {
+            //EntityColumnTypeMapping = new Dictionary<string, EntitiesSchema>();
+        }
+
 		[BsonId]
 		[BsonRepresentation(BsonType.ObjectId)]
 		public string Id { get; set; }
 
 		public string AppId { get; set; }
 
-		public IDictionary<string, EntitiesSchema> EntityColumnTypeMapping { get; set; }
+		public Dictionary<string, EntitiesSchema> EntityColumnTypeMapping { get; set; }
 
 		/*IEnumerator IEnumerable.GetEnumerator()
 		{

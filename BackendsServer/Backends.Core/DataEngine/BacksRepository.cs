@@ -216,7 +216,22 @@ namespace Backends.Core.DataEngine
 			}
 		}
 
-		public void CreateCollection(string name, BsonDocument validator)
+        public async Task<BacksProjectSchema> GetSchema(string appId)
+        {
+            try
+            {
+                
+                var filter = Builders<BacksProjectSchema>.Filter.Eq(s=>s.AppId, appId);
+                return await _context._Schema.Find(filter).FirstOrDefaultAsync(); 
+            }
+            catch (Exception e)
+            {
+                _log.Error("Exception in GetSchema", e);
+                throw;
+            }
+        }
+
+        public void CreateCollection(string name, BsonDocument validator)
 		{
 			try
 			{
