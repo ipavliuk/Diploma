@@ -459,7 +459,20 @@ namespace BackendsCore.Test
 		[TestMethod]
 		public void UpdateUser_Test()
 		{
+			string accId, projId;
+			CreateAccountProject(out accId, out projId);
+			BacksUsers user = new BacksUsers()
+			{
+				UserName = "mccparker",
+				Password = "123456",
+				Email = "ig@mail.com",
+				AppId = projId,
+				CreatedAt = DateTime.UtcNow,
+				UpdatedAt = DateTime.UtcNow
+			};
 
+			_repo.AddUser(projId, user).Wait();
+			Assert.AreNotEqual(user.Id, null, "GetUser_Test=> failed create User");
 		}
 
 

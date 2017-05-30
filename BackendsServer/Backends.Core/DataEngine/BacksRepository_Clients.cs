@@ -57,7 +57,7 @@ namespace Backends.Core.DataEngine
 			}
 			catch (Exception e)
 			{
-				_log.Error("Exception in UpdateAccount", e);
+				_log.Error("Exception in UpdateUser", e);
 				throw;
 			}
 
