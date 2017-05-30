@@ -35,6 +35,16 @@ namespace Backends.Core.DataEngine
 			return _db.GetCollection<BacksUsers>(collection);
 		}
 
+		public IMongoCollection<BacksSessions> Get_Sessions(string collection)
+		{
+			return _db.GetCollection<BacksSessions>(collection);
+		}
+
+		public IMongoCollection<BacksObject> Get_Objects(string collection)
+		{
+			return _db.GetCollection<BacksObject>(collection);
+		}
+
 		public IMongoCollection<Account> Accounts
 		{
 			get

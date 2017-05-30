@@ -45,24 +45,30 @@ namespace Backends.Core.DataEngine
 		//users
 		Task AddUser(string appId, BacksUsers user);
 		Task<BacksUsers> GetUser(string appId, string userId);
+		Task<IList<BacksUsers>> GetUsers(string appId, string query);
 		Task UpdateUser(string appId, string userId, string password, Dictionary<string, object> data);
+		Task RemoveUser(string appId, string userId);
 
 		//Task<BacksUsers> GetUser(string appId, string userId);
+		Task AddSession(string appId, BacksSessions session);
+		Task<BacksUsers> GetSession(string appId, string sessionId);
+		Task UpdateSession(string appId, string sessionId, Dictionary<string, object> data);
 
 		#endregion
+
 		/*	Task<string> Add(string appId, BacksObject bObject);
-			Task<BacksObject> GetObject(string appId, string entityClass, string id);
-			Task UpdateObject(string appId, string entityClass, string id, BacksObject bObject);
-			Task RemoveObject(string appId, string entityClass, string id);
-			Task<IList<BacksObject>> GetObjects(string appId, string entityClass);
-
-			//BacksUsers SignInUser(string appId, BacksUsers user);
-			//BacksUsers Login(string appId, string userName, string pwd);
-			Task<BacksUsers> AddUser(string appId, BacksUsers user);
-			
-
-			Task UpdateUser(string appId, string BacksUsers);
-			Task<IList<BacksUsers>> GetUsers(string appId);
-			Task RemoveUser(string appId, string id);*/
+					Task<BacksObject> GetObject(string appId, string entityClass, string id);
+					Task UpdateObject(string appId, string entityClass, string id, BacksObject bObject);
+					Task RemoveObject(string appId, string entityClass, string id);
+					Task<IList<BacksObject>> GetObjects(string appId, string entityClass);
+		
+					//BacksUsers SignInUser(string appId, BacksUsers user);
+					//BacksUsers Login(string appId, string userName, string pwd);
+					Task<BacksUsers> AddUser(string appId, BacksUsers user);
+					
+		
+					Task UpdateUser(string appId, string BacksUsers);
+					Task<IList<BacksUsers>> GetUsers(string appId);
+					Task RemoveUser(string appId, string id);*/
 	}
 }

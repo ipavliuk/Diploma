@@ -475,7 +475,41 @@ namespace BackendsCore.Test
 			Assert.AreNotEqual(user.Id, null, "GetUser_Test=> failed create User");
 		}
 
+		[TestMethod]
+		public void UpdateUser_WithNewFields_Test()
+		{
+			
+		}
 
+		[TestMethod]
+		public void UpdateUser_PasswordOnly_Test()
+		{
+
+		}
+
+		[TestMethod]
+		public void CreateSession_Test()
+		{
+
+		}
+
+		[TestMethod]
+		public void GetSession_Test()
+		{
+
+		}
+
+		[TestMethod]
+		public void CreateAllUserSession_Test()
+		{
+
+		}
+
+		[TestMethod]
+		public void removeSession_Test()
+		{
+
+		}
 
 		#endregion
 

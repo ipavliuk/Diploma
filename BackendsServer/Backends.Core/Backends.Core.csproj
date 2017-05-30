@@ -70,6 +70,7 @@
     <Compile Include="DataEngine\IRepositoryAsync.cs" />
     <Compile Include="Extension\ObjectExtensions.cs" />
     <Compile Include="Extension\TypeExtensions.cs" />
+    <Compile Include="Model\BackAdminData\UserDto.cs" />
     <Compile Include="Services\SchemaHandler.cs" />
     <Compile Include="ErrorCodes.cs" />
     <Compile Include="Model\BackAdminData\Account.cs" />
