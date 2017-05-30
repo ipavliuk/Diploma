@@ -12,7 +12,7 @@ using MongoDB.Bson;
 
 namespace Backends.Core.DataEngine
 {
-	public class BacksRepository : IRepositoryAsync
+	public partial class BacksRepository : IRepositoryAsync
 	{
 		private readonly BackendsContext _context = null;
 		private ILog _log = new Log(typeof(BacksRepository));

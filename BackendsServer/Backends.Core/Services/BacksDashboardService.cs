@@ -85,8 +85,9 @@ namespace Backends.Core.Services
 				var projects = _repo.GetAccountProjects(acc.Id).Result.ToList();
 
 				var mappedAccount = Mapper.Map<Account, AccountDto>(acc);
-				var mappedProjetcs = Mapper.Map<List<Project>, List<ProjectDto>>(projects);
-				mappedAccount.Projects = mappedProjetcs;
+				mappedAccount.Projects = GetUserProjects(acc.Id, out error);
+				//var mappedProjetcs = Mapper.Map<List<Project>, List<ProjectDto>>(projects);
+				//mappedAccount.Projects = mappedProjetcs;
 
 				return mappedAccount;
 			}
@@ -151,6 +152,11 @@ namespace Backends.Core.Services
 			try
 			{
 				var project = _repo.GetProject(projId).Result;
+				if(project == null)
+				{
+					error = BacksErrorCodes.SystemError;
+					return null;
+				}
 				var mappedProjetcs = Mapper.Map<Project, ProjectDto>(project);
 
 				//GetSchema
@@ -170,9 +176,26 @@ namespace Backends.Core.Services
 			try
 			{
 				var projects = _repo.GetAccountProjects(acc_id).Result;
+				
+				if (projects == null)
+				{
+					error = BacksErrorCodes.SystemError;
+					return null;
+				}
+
 				var mappedProjetcs = Mapper.Map<List<Project>, List<ProjectDto>>(projects.ToList());
 
 				//GetSchema
+				foreach (var item in mappedProjetcs)
+				{
+					var schema = _repo.GetSchema(item.Id).Result;
+					if (schema != null)
+					{
+						item.Schema = schema;
+					}
+				}
+
+				return mappedProjetcs;
 			}
 			catch (Exception e)
 			{

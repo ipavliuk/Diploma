@@ -66,6 +66,7 @@
     <Compile Include="Config\Configuration.cs" />
     <Compile Include="DataEngine\BackendsContext.cs" />
     <Compile Include="DataEngine\BacksRepository.cs" />
+    <Compile Include="DataEngine\BacksRepository_Clients.cs" />
     <Compile Include="DataEngine\IRepositoryAsync.cs" />
     <Compile Include="Extension\ObjectExtensions.cs" />
     <Compile Include="Extension\TypeExtensions.cs" />

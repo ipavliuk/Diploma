@@ -36,13 +36,20 @@ namespace Backends.Core.DataEngine
 		Task Add_Schema(BacksProjectSchema schema);
         Task<BacksProjectSchema> GetSchema(string appId);
         void CreateCollection(string name, BsonDocument validator);
-		
-
 		#endregion
 
 		void DropDB(string name);
-		void DropCollection(string name); 
+		void DropCollection(string name);
 
+		#region BacksAPIObjects
+		//users
+		Task AddUser(string appId, BacksUsers user);
+		Task<BacksUsers> GetUser(string appId, string userId);
+		Task UpdateUser(string appId, string userId, string password, Dictionary<string, object> data);
+
+		//Task<BacksUsers> GetUser(string appId, string userId);
+
+		#endregion
 		/*	Task<string> Add(string appId, BacksObject bObject);
 			Task<BacksObject> GetObject(string appId, string entityClass, string id);
 			Task UpdateObject(string appId, string entityClass, string id, BacksObject bObject);
@@ -52,7 +59,7 @@ namespace Backends.Core.DataEngine
 			//BacksUsers SignInUser(string appId, BacksUsers user);
 			//BacksUsers Login(string appId, string userName, string pwd);
 			Task<BacksUsers> AddUser(string appId, BacksUsers user);
-			Task<BacksUsers> GetUser(string appId, string id);
+			
 
 			Task UpdateUser(string appId, string BacksUsers);
 			Task<IList<BacksUsers>> GetUsers(string appId);

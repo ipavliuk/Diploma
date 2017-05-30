@@ -1,4 +1,5 @@
-﻿using MongoDB.Bson.Serialization.Attributes;
+﻿using MongoDB.Bson;
+using MongoDB.Bson.Serialization.Attributes;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,9 +9,10 @@ using System.Threading.Tasks;
 
 namespace BackendsCommon.Types
 {
-	public class BacksObject : IBaseObject
+	public class BacksObject //: IEnumerable<KeyValuePair<string, object>>//: IBaseObject
 	{
 		[BsonId]
+		[BsonRepresentation(BsonType.ObjectId)]
 		public string Id { get; set; }
 		public string Name { get; set; }
 		public DateTime? CreatedAt { get; set; }
@@ -37,7 +39,7 @@ namespace BackendsCommon.Types
 			set { data = value; }
 		}
 
-		public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
+	/*	public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
 		{
 			return Data.GetEnumerator();
 		}
@@ -45,6 +47,6 @@ namespace BackendsCommon.Types
 		IEnumerator IEnumerable.GetEnumerator()
 		{
 			return this.GetEnumerator();
-		}
+		}*/
 	}
 }

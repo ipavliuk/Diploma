@@ -7,6 +7,7 @@ using Backends.Core.Model;
 using Backends.Core.Model.BackAdminData;
 using Backends.Core.Services;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using System.Collections.Generic;
 
 namespace BackendsCore.Test
 {
@@ -111,7 +112,7 @@ namespace BackendsCore.Test
 
 
 		[TestMethod]
-		public void GetUserProject()
+		public void GetUserProject_Test()
 		{
 			_service.RepoInstance.DropCollection("Accounts");
 			BacksErrorCodes error = BacksErrorCodes.Ok;
@@ -154,6 +155,58 @@ namespace BackendsCore.Test
 			Assert.AreEqual(error, BacksErrorCodes.Ok, "GetUserProject => failed to get proper error code");
 			Assert.AreEqual(account.Id, _id1, string.Format("GetUserProject => failed to login user errorCode = {0}", error));
 			Assert.IsTrue(account.Projects.Any(), "GetUserProject => failed to get projects");
+
+
 		}
+		[TestMethod]
+		public void GetUserProjectService_Test()
+		{
+			_service.RepoInstance.DropCollection("Accounts");
+			BacksErrorCodes error = BacksErrorCodes.Ok;
+			string login = "LoginTestUser";
+			string pwd = Guid.NewGuid().ToString("N");
+			string _id1 = _service.SignIn("TestUser", "Pav1", "Test@gmail.com", login, pwd, out error);
+			Assert.AreEqual(error, BacksErrorCodes.Ok, "Login_Test_With_Projects => failed to get proper error code");
+			Assert.IsNotNull(_id1, "GetUserProjectService_Test => failed to create accoutn id");
+
+			//addProjects
+			var proj1 = _service.AddNewProject("Test1", _id1, out error);
+
+			Assert.AreNotEqual(proj1.Id, null, "GetUserProject=> failed to create Project");
+
+			var proj2 = _service.AddNewProject("Test2", _id1, out error);
+			Assert.AreNotEqual(proj2.Id, null, "GetUserProject=> failed to create Project");
+			//
+			error = BacksErrorCodes.Ok;
+			AccountDto account = _service.Login("LoginTestUser", pwd, out error);
+			Assert.AreEqual(error, BacksErrorCodes.Ok, "GetUserProjectService_Test => failed to get proper error code");
+			Assert.AreEqual(account.Id, _id1, string.Format("GetUserProjectService_Test => failed to login user errorCode = {0}", error));
+			Assert.IsTrue(account.Projects.Any(), "GetUserProjectService_Test => failed to get projects");
+			
+			Assert.IsTrue(account.Projects.TrueForAll(it => it.Schema != null), "GetUserProjectService_Test => failed to get projects");
+			
+
+		}
+		[TestMethod]
+		public void GetUser_ZeroProject_Test()
+		{
+			_service.RepoInstance.DropCollection("Accounts");
+			BacksErrorCodes error = BacksErrorCodes.Ok;
+			string login = "LoginTestUser";
+			string pwd = Guid.NewGuid().ToString("N");
+			string _id1 = _service.SignIn("TestUser", "Pav1", "Test@gmail.com", login, pwd, out error);
+			Assert.AreEqual(error, BacksErrorCodes.Ok, "Login_Test_With_Projects => failed to get proper error code");
+			Assert.IsNotNull(_id1, "GetUserProject => failed to create accoutn id");
+
+			
+			List<ProjectDto> projects = _service.GetUserProjects(_id1, out error);
+
+			Assert.AreNotEqual(projects, null, "GetUser_ZeroProject_Test=> get Projects");
+			//
+			
+		}
+
+		
+		
 	}
 }

@@ -385,7 +385,86 @@ namespace BackendsCore.Test
 			};
 			handler.IsSchemaValid<>
 		}*/
-        #endregion
 
-    }
+		private void CreateAccountProject(out string accId, out string projId)
+		{
+			var testAcc = new Account
+			{
+				FirstName = "testProjeAccount",
+				LastName = "JaskTestProjetc",
+				Email = "testProj@mail.com",
+				ScreenName = "testAccProj",
+				Pasword = "12345"
+			};
+
+			_repo.AddAccount(testAcc).Wait();
+			Assert.AreNotEqual(testAcc.Id, null, "GetProject_Test=> failed to create Account");
+			accId = testAcc.Id;
+
+			var proj1 = new Project()
+			{
+				AppId = Guid.NewGuid().ToString("N"),
+				ApiKeyAccess = Guid.NewGuid().ToString("N"),
+				MasterKeyAccess = Guid.NewGuid().ToString("N"),
+				CreatedAt = DateTime.UtcNow,
+				P_AccountId = testAcc.Id
+			};
+
+			_repo.AddProject(proj1).Wait();
+			Assert.AreNotEqual(proj1.Id, null, "GetAccountProjects_Test=> failed to create Project1");
+			projId = proj1.Id;
+		}
+
+		[TestMethod]
+		public void AddUser_Test()
+		{
+			string accId, projId;
+			CreateAccountProject(out accId, out projId);
+			BacksUsers user = new BacksUsers()
+			{
+				UserName = "mccparker",
+				Password ="123456",
+				Email= "ig@mail.com",
+				AppId = projId,
+				CreatedAt = DateTime.UtcNow,
+				UpdatedAt = DateTime.UtcNow
+			};
+
+			_repo.AddUser(projId, user).Wait();
+			Assert.AreNotEqual(user.Id, null, "AddUser_Test=> failed create User");
+		}
+
+		[TestMethod]
+		public void GetUser_Test()
+		{
+			string accId, projId;
+			CreateAccountProject(out accId, out projId);
+			BacksUsers user = new BacksUsers()
+			{
+				UserName = "mccparker",
+				Password = "123456",
+				Email = "ig@mail.com",
+				AppId = projId,
+				CreatedAt = DateTime.UtcNow,
+				UpdatedAt = DateTime.UtcNow
+			};
+
+			_repo.AddUser(projId, user).Wait();
+			Assert.AreNotEqual(user.Id, null, "GetUser_Test=> failed create User");
+
+			BacksUsers userGet = _repo.GetUser(projId, user.Id).Result;
+			Assert.AreNotEqual(userGet.Id, null, "GetUser_Test=> failed get User");
+			Assert.IsNotNull(userGet.Id, null, "GetUser_Test=> failed get User");
+		}
+		[TestMethod]
+		public void UpdateUser_Test()
+		{
+
+		}
+
+
+
+		#endregion
+
+	}
 }
