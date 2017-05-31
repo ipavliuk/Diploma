@@ -8,6 +8,7 @@ using Backends.Core.Model;
 using BackendsCommon.Types;
 using BackendsCommon.Types.BacksModel;
 using Backends.Core.Services;
+using Backends.Core.Extension;
 
 namespace BackendsCore.Test
 {
@@ -457,7 +458,7 @@ namespace BackendsCore.Test
 			Assert.IsNotNull(userGet.Id, null, "GetUser_Test=> failed get User");
 		}
 		[TestMethod]
-		public void UpdateUser_Test()
+		public void UpdateUser_WithNewFields_Test()
 		{
 			string accId, projId;
 			CreateAccountProject(out accId, out projId);
@@ -472,43 +473,198 @@ namespace BackendsCore.Test
 			};
 
 			_repo.AddUser(projId, user).Wait();
-			Assert.AreNotEqual(user.Id, null, "GetUser_Test=> failed create User");
-		}
+			Assert.AreNotEqual(user.Id, null, "UpdateUser_Test=> failed create User");
 
-		[TestMethod]
-		public void UpdateUser_WithNewFields_Test()
-		{
+			_repo.UpdateUserData(projId, user.Id, new Dictionary<string, object>()
+			{
+				{"phone", "555-666"}
+			});
+
+			BacksUsers userGet = _repo.GetUser(projId, user.Id).Result;
+			Assert.IsNotNull(userGet.Data, "UpdateUser_Test=> data is not updated");
+			Assert.AreEqual(userGet.Data["phone"], "555-666", "UpdateUser_Test=> phone data is not updated");
+			var newDict = new Dictionary<string, object>()
+			{
+				{"location", "Ukraine"},
+				{"phone", "666-555"},
+			};
+
+			var oldDict = userGet.Data;
+			foreach (var pair in newDict)
+			{
+				oldDict.CreateNewOrUpdateExisting(pair.Key, pair.Value);
+			}
 			
+			_repo.UpdateUserData(projId, user.Id, oldDict);
+
+			userGet = _repo.GetUser(projId, user.Id).Result;
+			Assert.AreEqual(userGet.Data["location"], "Ukraine", "UpdateUser_Test=> phone data is not updated");
+			Assert.AreEqual(userGet.Data["phone"], "666-555", "UpdateUser_Test=> phone data is not updated");
+
+			_repo.UpdateUserPasswrod(projId, user.Id, "654321");
+			userGet = _repo.GetUser(projId, user.Id).Result;
+			Assert.AreEqual(userGet.Password, "654321", "UpdateUser_Test=> password is not updated");
+
 		}
 
 		[TestMethod]
-		public void UpdateUser_PasswordOnly_Test()
+		public void RemoveUser_Test()
 		{
+			string accId, projId;
+			CreateAccountProject(out accId, out projId);
+			BacksUsers user = new BacksUsers()
+			{
+				UserName = "mccparker",
+				Password = "123456",
+				Email = "ig@mail.com",
+				AppId = projId,
+				CreatedAt = DateTime.UtcNow,
+				UpdatedAt = DateTime.UtcNow
+			};
 
+			_repo.AddUser(projId, user).Wait();
+			Assert.AreNotEqual(user.Id, null, "UpdateUser_Test=> failed create User");
+
+			_repo.RemoveUser(projId, user.Id).Wait();
+
+			var userNew = _repo.GetUser(projId, user.Id).Result;
+			Assert.IsNull(userNew, "RemoveUser_Test => Remove failed for object");
 		}
 
 		[TestMethod]
 		public void CreateSession_Test()
 		{
-
+			
+			BacksSessions sessionOut;
+			BacksUsers userOut;
+			GenerateUserSessions(out sessionOut, out userOut);
 		}
 
 		[TestMethod]
 		public void GetSession_Test()
 		{
+			string accId, projId;
+			CreateAccountProject(out accId, out projId);
+			BacksUsers user = new BacksUsers()
+			{
+				UserName = "mccparker",
+				Password = "123456",
+				Email = "ig@mail.com",
+				AppId = projId,
+				CreatedAt = DateTime.UtcNow,
+				UpdatedAt = DateTime.UtcNow
+			};
+
+			_repo.AddUser(projId, user).Wait();
+			Assert.AreNotEqual(user.Id, null, "GetSession_Test=> failed create User");
+
+			var session = new BacksSessions()
+			{
+				PUser = user.Id,
+				CreatedAt = DateTime.UtcNow,
+				ExpiresAt = DateTime.UtcNow.AddMinutes(30),
+				AppId = projId
+			};
+
+			_repo.AddSession(projId, session).Wait();
+			Assert.AreNotEqual(session.Id, null, "GetSession_Test=> failed create User session");
+
+			BacksSessions sessionNew = _repo.GetSession(projId, session.Id).Result;
+			Assert.IsNotNull(sessionNew, "GetSession_Test=> failed get User");
+			Assert.AreEqual(sessionNew.Id, session.Id, "GetSession_Test=> failed get User");
+			
+		}
+		private void GenerateUserSessions(out BacksSessions sessionOut, out BacksUsers userOut)
+		{
+			string accId, projId;
+			CreateAccountProject(out accId, out projId);
+			BacksUsers user = new BacksUsers()
+			{
+				UserName = "mccparker",
+				Password = "123456",
+				Email = "ig@mail.com",
+				AppId = projId,
+				CreatedAt = DateTime.UtcNow,
+				UpdatedAt = DateTime.UtcNow
+			};
+
+			_repo.AddUser(projId, user).Wait();
+			Assert.AreNotEqual(user.Id, null, "CreateSession_Test=> failed create User");
+
+			var session = new BacksSessions()
+			{
+				PUser = user.Id,
+				CreatedAt = DateTime.UtcNow,
+				ExpiresAt = DateTime.UtcNow.AddMinutes(30),
+				AppId = projId
+			};
+
+			_repo.AddSession(projId, session).Wait();
+			Assert.AreNotEqual(session.Id, null, "CreateSession_Test=> failed create User session");
+			sessionOut = session;
+			userOut = user;
+		}
+
+		[TestMethod]
+		public void UpdateSession_Test()
+		{
+			BacksSessions sessionOut;
+			BacksUsers userOut;
+			GenerateUserSessions(out sessionOut, out userOut);
+
+			var newDict = new Dictionary<string, object>()
+			{
+				{"location", "Ukraine"},
+				{"phone", "666-555"},
+			};
+
+			var oldDict = sessionOut.Data;
+			foreach (var pair in newDict)
+			{
+				oldDict.CreateNewOrUpdateExisting(pair.Key, pair.Value);
+			}
+
+			_repo.UpdateSession(userOut.AppId, sessionOut.Id, oldDict).Wait();
+
+			var session1 = _repo.GetSession(userOut.AppId, sessionOut.Id).Result;
+			Assert.AreEqual(sessionOut.Data["location"], "Ukraine", "UpdateSession_Test=> phone data is not updated");
+			Assert.AreEqual(sessionOut.Data["phone"], "666-555", "UpdateSession_Test=> phone data is not updated");
+		}
+
+		[TestMethod]
+		public void GetAllUserSession_Test()
+		{
+			BacksSessions sessionOut; 
+			BacksUsers userOut;
+			GenerateUserSessions(out sessionOut, out userOut);
+			var session1 = new BacksSessions()
+			{
+				PUser = userOut.Id,
+				CreatedAt = DateTime.UtcNow,
+				ExpiresAt = DateTime.UtcNow.AddMinutes(30),
+				AppId = userOut.AppId
+			};
+
+			_repo.AddSession(userOut.AppId, session1).Wait();
+			Assert.AreNotEqual(session1.Id, null, "GetAllUserSession_Test=> failed create User session");
+
+			var sessions = _repo.GetAllSessions(userOut.AppId, userOut.Id).Result;
+			Assert.IsNotNull(sessions, "GetAllUserSession_Test=> failed create User session");
+			
 
 		}
 
 		[TestMethod]
-		public void CreateAllUserSession_Test()
+		public void RemoveSession_Test()
 		{
+			BacksSessions sessionOut;
+			BacksUsers userOut;
+			GenerateUserSessions(out sessionOut, out userOut);
 
-		}
+			_repo.RemoveSession(userOut.AppId, sessionOut.Id).Wait();
 
-		[TestMethod]
-		public void removeSession_Test()
-		{
-
+			var session1 = _repo.GetSession(userOut.AppId, sessionOut.Id).Result;
+			Assert.IsNull(session1, "RemoveSession_Test => Remove failed for object");
 		}
 
 		#endregion

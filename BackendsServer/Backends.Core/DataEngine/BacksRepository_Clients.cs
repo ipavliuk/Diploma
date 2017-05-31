@@ -24,6 +24,23 @@ namespace Backends.Core.DataEngine
 			}
 
 		}
+		public async Task<BacksUsers> Authenticate(string appId, string username, string pwd)
+		{
+			try
+			{
+				var filter = Builders<BacksUsers>.Filter.Eq(s => s.AppId, appId) &
+						Builders<BacksUsers>.Filter.Eq(s => s.UserName, username) &
+						Builders<BacksUsers>.Filter.Eq(s => s.Password, pwd);
+
+				return await _context.Get_Users("_User_" + appId)
+								.Find(filter)
+								.FirstOrDefaultAsync();
+			}
+			catch (Exception e)
+			{
+				_log.Error("Exception in Authenticate", e);
+				throw;
+		}
 		public async Task<BacksUsers> GetUser(string appId, string userId)
 		{
 			try
@@ -53,20 +70,33 @@ namespace Backends.Core.DataEngine
 			}
 		}
 
-		public async Task UpdateUser(string appId, string userId, string password, Dictionary<string, object> data)
+		public async Task UpdateUserPasswrod(string appId, string userId, string password)
 		{
 			try
 			{
 				var filter = Builders<BacksUsers>.Filter.Eq(s => s.Id, userId);
-				//var updater = Builders<Account>.Update;
-
 				var update = Builders<BacksUsers>.Update
 								.Set(s => s.Password, password)
-								.Set(s => s.Data, data)
 								.CurrentDate(s => s.UpdatedAt);
 								
-				//.CurrentDate(s => s.);
+				await _context.Get_Users("_User_" + appId).UpdateOneAsync(filter, update);
+			}
+			catch (Exception e)
+			{
+				_log.Error("Exception in UpdateUser", e);
+				throw;
+			}
+		}
 
+		public async Task UpdateUserData(string appId, string userId, Dictionary<string, object> data)
+		{
+			try
+			{
+				var filter = Builders<BacksUsers>.Filter.Eq(s => s.Id, userId);
+
+				var update = Builders<BacksUsers>.Update
+								.Set(s => s.Data, data)
+								.CurrentDate(s => s.UpdatedAt);
 				await _context.Get_Users("_User_" + appId).UpdateOneAsync(filter, update);
 			}
 			catch (Exception e)
@@ -104,12 +134,12 @@ namespace Backends.Core.DataEngine
 			}
 
 		}
-		public async Task<BacksUsers> GetSession(string appId, string sessionId)
+		public async Task<BacksSessions> GetSession(string appId, string sessionId)
 		{
 			try
 			{
-				var filter = Builders<BacksUsers>.Filter.Eq("Id", sessionId);
-				return await _context.Get_Users("_Session_" + appId)
+				var filter = Builders<BacksSessions>.Filter.Eq("Id", sessionId);
+				return await _context.Get_Sessions("_Session_" + appId)
 								.Find(filter)
 								.FirstOrDefaultAsync();
 			}
@@ -140,45 +170,108 @@ namespace Backends.Core.DataEngine
 			}
 		}
 
-		public async Task GetAllSessions(string appId, string userId)
+		public async Task<List<BacksSessions>> GetAllSessions(string appId, string userId)
 		{
 			try
 			{
-				var filter = Builders<BacksSessions>.Filter.Eq(s => s.Id, sessionId);
+				var filter = Builders<BacksSessions>.Filter.Eq(s => s.AppId, appId) &
+					Builders<BacksSessions>.Filter.Eq(s => s.PUser, userId);
 
-				var update = Builders<BacksSessions>.Update
-								.Set(s => s.Data, data)
-								.CurrentDate(s => s.UpdatedAt);
-
-
-				await _context.Get_Sessions("_Session_" + appId).UpdateOneAsync(filter, update);
+				return await _context.Get_Sessions("_Session_" + appId).Find(filter).ToListAsync();
 			}
 			catch (Exception e)
 			{
-				_log.Error("Exception in UpdateSession", e);
+				_log.Error("Exception in GetAllSessions", e);
 				throw;
 			}
 		}
 
-		public async Task RemoveSession(string appId, string userId)
+		public async Task RemoveSession(string appId, string sessionId)
 		{
 			try
 			{
-				var filter = Builders<BacksSessions>.Filter.Eq(s => s.Id, sessionId);
-
-				var update = Builders<BacksSessions>.Update
-								.Set(s => s.Data, data)
-								.CurrentDate(s => s.UpdatedAt);
-
-
-				await _context.Get_Sessions("_Session_" + appId).UpdateOneAsync(filter, update);
+				await _context.Get_Sessions("_Session_" + appId).DeleteOneAsync(Builders<BacksSessions>.Filter.Eq("Id", sessionId));
 			}
 			catch (Exception e)
 			{
-				_log.Error("Exception in UpdateSession", e);
+				_log.Error("Exception in RemoveSession", e);
 				throw;
 			}
 		}
 
+		public async Task AddEntity(string appId, BacksObject entity)
+		{
+			try
+			{
+				await _context.Get_Objects(entity.Name + "_" + appId).InsertOneAsync(entity);
+			}
+			catch (Exception e)
+			{
+				_log.Error("Exception in AddEntity", e);
+				throw;
+			}
+		}
+		public async Task<BacksObject> GetEntity(string appId, string entityName, string entityId)
+		{
+			try
+			{
+				var filter = Builders<BacksObject>.Filter.Eq("Id", entityId);
+				return await _context.Get_Objects(entityName + "_" + appId)
+								.Find(filter)
+								.FirstOrDefaultAsync();
+			}
+			catch (Exception e)
+			{
+				_log.Error("Exception in GetEntity", e);
+				throw;
+			}
+		}
+
+		public async Task<List<BacksObject>> GetAllEntity(string appId, string entityName)
+		{
+			try
+			{
+				var filter = Builders<BacksObject>.Filter.Eq("AppId", appId);
+				return await _context.Get_Objects(entityName + "_" + appId).Find(filter).ToListAsync();
+			}
+			catch (Exception e)
+			{
+				_log.Error("Exception in GetAllEntity", e);
+				throw;
+			}
+		}
+
+		public async Task UpdateEntity(string appId, string entityName, string entityId, Dictionary<string, object> data)
+		{
+			try
+			{
+				var filter = Builders<BacksObject>.Filter.Eq(s => s.Id, entityId);
+
+				var update = Builders<BacksObject>.Update
+								.Set(s => s.Data, data)
+								.CurrentDate(s => s.UpdatedAt);
+
+
+				await _context.Get_Objects(entityName + "_" + appId).UpdateOneAsync(filter, update);
+			}
+			catch (Exception e)
+			{
+				_log.Error("Exception in UpdateEntity", e);
+				throw;
+			}
+		}
+
+		public async Task RemoveEntity(string appId, string entityName, string entityId)
+		{
+			try
+			{
+				await _context.Get_Objects(entityName + "_" + appId).DeleteOneAsync(Builders<BacksObject>.Filter.Eq("Id", entityId));
+			}
+			catch (Exception e)
+			{
+				_log.Error("Exception in RemoveSession", e);
+				throw;
+			}
+		}
 	}
 }

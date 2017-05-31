@@ -1,4 +1,5 @@
-﻿using System;
+﻿using MongoDB.Bson.Serialization.Attributes;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,7 @@ namespace BackendsCommon.Types
 			this.Name = "_Session";
 		}
 		public string Token { get; set; }
+
 		public DateTime ExpiresAt { get; set; }	
 		public string PUser { get; set; }
 	}

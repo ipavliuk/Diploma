@@ -9,7 +9,7 @@ namespace Backends.Core.Utils
 {
 	public static class CryptoHelper
 	{
-		public static string CreateMD5Hash(string value, string salt = null)
+		public static string CreateMD5Hash(this string value, string salt = null)
 		{
 			string saltedValue = (salt ?? string.Empty) + value;
 

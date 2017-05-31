@@ -34,8 +34,8 @@ namespace Backends.Core.DataEngine
 		#region Backends Projects
 
 		Task Add_Schema(BacksProjectSchema schema);
-        Task<BacksProjectSchema> GetSchema(string appId);
-        void CreateCollection(string name, BsonDocument validator);
+		Task<BacksProjectSchema> GetSchema(string appId);
+		void CreateCollection(string name, BsonDocument validator);
 		#endregion
 
 		void DropDB(string name);
@@ -44,31 +44,30 @@ namespace Backends.Core.DataEngine
 		#region BacksAPIObjects
 		//users
 		Task AddUser(string appId, BacksUsers user);
+
+		Task<BacksUsers> Authenticate(string appId, string username, string pwd);
 		Task<BacksUsers> GetUser(string appId, string userId);
 		Task<IList<BacksUsers>> GetUsers(string appId, string query);
-		Task UpdateUser(string appId, string userId, string password, Dictionary<string, object> data);
+		Task UpdateUserPasswrod(string appId, string userId, string password);
+		Task UpdateUserData(string appId, string userId, Dictionary<string, object> data);
+
 		Task RemoveUser(string appId, string userId);
 
 		//Task<BacksUsers> GetUser(string appId, string userId);
 		Task AddSession(string appId, BacksSessions session);
-		Task<BacksUsers> GetSession(string appId, string sessionId);
+		Task<BacksSessions> GetSession(string appId, string sessionId);
 		Task UpdateSession(string appId, string sessionId, Dictionary<string, object> data);
+		Task<List<BacksSessions>> GetAllSessions(string appId, string userId);
+		Task RemoveSession(string appId, string sessionId);
+
+		Task AddEntity(string appId, BacksObject entity);
+		Task<BacksObject> GetEntity(string appId, string entityName, string entityId);
+		Task<List<BacksObject>> GetAllEntity(string appId, string entityName);
+		Task UpdateEntity(string appId, string entityName, string entityId, Dictionary<string, object> data);
+		Task RemoveEntity(string appId, string entityName, string entityId);
+
 
 		#endregion
 
-		/*	Task<string> Add(string appId, BacksObject bObject);
-					Task<BacksObject> GetObject(string appId, string entityClass, string id);
-					Task UpdateObject(string appId, string entityClass, string id, BacksObject bObject);
-					Task RemoveObject(string appId, string entityClass, string id);
-					Task<IList<BacksObject>> GetObjects(string appId, string entityClass);
-		
-					//BacksUsers SignInUser(string appId, BacksUsers user);
-					//BacksUsers Login(string appId, string userName, string pwd);
-					Task<BacksUsers> AddUser(string appId, BacksUsers user);
-					
-		
-					Task UpdateUser(string appId, string BacksUsers);
-					Task<IList<BacksUsers>> GetUsers(string appId);
-					Task RemoveUser(string appId, string id);*/
 	}
 }

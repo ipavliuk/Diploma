@@ -68,6 +68,7 @@
     <Compile Include="DataEngine\BacksRepository.cs" />
     <Compile Include="DataEngine\BacksRepository_Clients.cs" />
     <Compile Include="DataEngine\IRepositoryAsync.cs" />
+    <Compile Include="Extension\DictionaryExtensions.cs" />
     <Compile Include="Extension\ObjectExtensions.cs" />
     <Compile Include="Extension\TypeExtensions.cs" />
     <Compile Include="Model\BackAdminData\UserDto.cs" />

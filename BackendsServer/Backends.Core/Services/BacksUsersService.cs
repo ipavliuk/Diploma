@@ -9,6 +9,8 @@ using Backends.Core.DataEngine;
 using Backends.Core.Model.BackAdminData;
 using BackendsCommon.Logging;
 using BackendsCommon.Types;
+using Backends.Core.Utils;
+using AutoMapper;
 
 namespace Backends.Core.Services
 {
@@ -24,10 +26,14 @@ namespace Backends.Core.Services
 		{
 			_repo = repository;
 			_handler = new SchemaHandler(_repo);
+			Mapper.Initialize(cfg =>
+			{
+				cfg.CreateMap<BacksUsers, UserDto>();
+			});
 		}
 
 
-		public BacksUsers SignIn(string appId, string email, string userName, string pwd, out BacksErrorCodes error) // create user
+		public UserDto SignUp(string appId, string email, string userName, string pwd, out BacksErrorCodes error) // create user
 		{
 			error = BacksErrorCodes.Ok;
 			try
@@ -36,7 +42,7 @@ namespace Backends.Core.Services
 				{
 					AppId = appId,
 					UserName = userName,
-					Password = pwd,
+					Password = pwd.CreateMD5Hash(),
 					Email = email,
 					CreatedAt = DateTime.UtcNow
 				};
@@ -47,8 +53,32 @@ namespace Backends.Core.Services
 					return null;
 				}
 
-				_repo.AddUser(appId, user);
-				
+				_repo.AddUser(appId, user).Wait();
+				if (user.Id == null)
+				{
+					error = BacksErrorCodes.SignUpError;
+					return null;
+				}
+
+				//create session
+				var session = new BacksSessions()
+				{
+					PUser = user.Id,
+					CreatedAt = DateTime.UtcNow,
+					ExpiresAt = DateTime.UtcNow.AddMinutes(30),
+					AppId = appId,
+				};
+				_repo.AddSession(appId, session).Wait();
+
+				if (session.Id == null)
+				{
+					error = BacksErrorCodes.SignUpError;
+					return null;
+				}
+				var mappedUser = Mapper.Map<BacksUsers, UserDto>(user);
+				mappedUser.SessionId = session.Id;
+
+				return mappedUser;
 
 			}
 			catch (Exception e)
@@ -60,9 +90,47 @@ namespace Backends.Core.Services
 			return null;
 		}
 
-		public void Login()
+		public UserDto Login(string appId, string userName, string pwd, out BacksErrorCodes error)
 		{
+			error = BacksErrorCodes.Ok;
+			try
+			{
 
+				var user = _repo.Authenticate(appId, userName, pwd.CreateMD5Hash()).Result;
+				if (user.Id == null)
+				{
+					error = BacksErrorCodes.AuthFailed;
+					return null;
+				}
+
+				var session = new BacksSessions()
+				{
+					PUser = user.Id,
+					CreatedAt = DateTime.UtcNow,
+					ExpiresAt = DateTime.UtcNow.AddMinutes(30),
+					AppId = appId,
+				};
+				_repo.AddSession(appId, session);
+
+				if (session.Id == null)
+				{
+					error = BacksErrorCodes.SignUpError;
+					return null;
+				}
+				var mappedUser = Mapper.Map<BacksUsers, UserDto>(user);
+				mappedUser.SessionId = session.Id;
+
+				return mappedUser;
+
+
+			}
+			catch (Exception e)
+			{
+				_log.Error("Login exception : ", e);
+				error = BacksErrorCodes.SystemError;
+			}
+
+			return null;
 		}
 
 		public void Logout()
