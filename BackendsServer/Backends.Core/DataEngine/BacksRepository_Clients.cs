@@ -29,17 +29,18 @@ namespace Backends.Core.DataEngine
 			try
 			{
 				var filter = Builders<BacksUsers>.Filter.Eq(s => s.AppId, appId) &
-						Builders<BacksUsers>.Filter.Eq(s => s.UserName, username) &
-						Builders<BacksUsers>.Filter.Eq(s => s.Password, pwd);
+				             Builders<BacksUsers>.Filter.Eq(s => s.UserName, username) &
+				             Builders<BacksUsers>.Filter.Eq(s => s.Password, pwd);
 
 				return await _context.Get_Users("_User_" + appId)
-								.Find(filter)
-								.FirstOrDefaultAsync();
+					.Find(filter)
+					.FirstOrDefaultAsync();
 			}
 			catch (Exception e)
 			{
 				_log.Error("Exception in Authenticate", e);
 				throw;
+			}
 		}
 		public async Task<BacksUsers> GetUser(string appId, string userId)
 		{

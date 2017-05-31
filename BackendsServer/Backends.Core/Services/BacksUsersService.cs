@@ -157,5 +157,38 @@ namespace Backends.Core.Services
 		{
 			
 		}
+
+		public SessionDto GetSession(string appId, string sessionId, out BacksErrorCodes error)
+		{
+			error = BacksErrorCodes.Ok;
+			try
+			{
+
+				var session = _repo.GetSession(appId, sessionId).Result;
+				if (session.Id == null)
+				{
+					error = BacksErrorCodes.AuthFailed;
+					return null;
+				}
+
+
+				var sessionDto = new SessionDto()
+				{
+					Token = session.Id,
+					PUser = session.PUser,
+					CreatedAt = session.CreatedAt,
+					ExpiresAt = session.ExpiresAt
+				};
+
+				return sessionDto;
+			}
+			catch (Exception e)
+			{
+				_log.Error("GetSession exception : ", e);
+				error = BacksErrorCodes.SystemError;
+			}
+
+			return null;
+		}
 	}
 }
