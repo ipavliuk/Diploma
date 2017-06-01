@@ -34,6 +34,7 @@ namespace Backends.Core.Services
 			error = BacksErrorCodes.Ok;
 			try
 			{
+
 				var entity = new BacksObject()
 				{
 					AppId = appId,
@@ -42,7 +43,7 @@ namespace Backends.Core.Services
 					Name = name
 					
 				};
-				_repo.AddEntity(appId, entity);
+				_repo.AddEntity(appId, entity).Wait();
 
 				if (entity.Id == null)
 				{

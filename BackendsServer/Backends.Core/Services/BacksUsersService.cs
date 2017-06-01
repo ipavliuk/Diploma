@@ -213,7 +213,7 @@ namespace Backends.Core.Services
 			error = BacksErrorCodes.Ok;
 			try
 			{
-				if (ValidateSession(appId, userId, sessionToken, out error))
+				if (!ValidateSession(appId, userId, sessionToken, out error))
 				{
 					error = BacksErrorCodes.SessionIsNotFound;
 					return;
@@ -252,7 +252,7 @@ namespace Backends.Core.Services
 			error = BacksErrorCodes.Ok;
 			try
 			{
-				_repo.UpdateUserPasswrod(appId, userId, pwd).Wait();
+				_repo.UpdateUserPasswrod(appId, userId, pwd.CreateMD5Hash()).Wait();
 				//send email
 			}
 			catch (Exception e)
@@ -326,7 +326,8 @@ namespace Backends.Core.Services
 					Token = session.Id,
 					PUser = session.PUser,
 					CreatedAt = session.CreatedAt,
-					ExpiresAt = session.ExpiresAt
+					ExpiresAt = session.ExpiresAt,
+					Data = session.Data
 				};
 
 				return sessionDto;
@@ -340,12 +341,12 @@ namespace Backends.Core.Services
 			return null;
 		}
 
-		public List<SessionDto> GetUserSession(string appId, string sessionId, out BacksErrorCodes error)
+		public List<SessionDto> GetUserSession(string appId, string userId, out BacksErrorCodes error)
 		{
 			error = BacksErrorCodes.Ok;
 			try
 			{
-				var sessions = _repo.GetAllSessions(appId, sessionId).Result;
+				var sessions = _repo.GetAllSessions(appId, userId).Result;
 				if (sessions == null)
 				{
 					error = BacksErrorCodes.SessionIsNotFound;
@@ -361,7 +362,8 @@ namespace Backends.Core.Services
 						Token = item.Id,
 						PUser = item.PUser,
 						CreatedAt = item.CreatedAt,
-						ExpiresAt = item.ExpiresAt
+						ExpiresAt = item.ExpiresAt,
+						Data = item.Data
 					};
 
 					sessionsDto.Add(sessionDto);

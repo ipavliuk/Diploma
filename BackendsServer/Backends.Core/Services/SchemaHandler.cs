@@ -78,7 +78,7 @@ namespace Backends.Core.Services
             //_repo = repo;
         }
 
-        public bool IsSchemaValid<T>(BacksProjectSchema schema, T obj)  where T: BacksObject
+      /*  public bool IsSchemaValid<T>(BacksProjectSchema schema, T obj)  where T: BacksObject
         {
             if (schema == null)
                 return false;
@@ -91,6 +91,6 @@ namespace Backends.Core.Services
 
 
 			return true; 
-        }
+        }*/
     }
 }

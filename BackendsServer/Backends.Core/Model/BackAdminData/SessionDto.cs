@@ -14,5 +14,7 @@ namespace Backends.Core.Model.BackAdminData
 		
 		public DateTime ExpiresAt { get; set; }
 		public string PUser { get; set; }
+
+		public Dictionary<string, object> Data { get; set; }
 	}
 }

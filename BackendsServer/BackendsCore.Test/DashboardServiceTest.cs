@@ -108,6 +108,10 @@ namespace BackendsCore.Test
 
 			Assert.IsNotNull(proj, "AddNewProject_Test => failed to create project");
 			Assert.IsNotNull(proj.Id, "AddNewProject_Test => failed to create project id");
+
+			ProjectDto proj1 = _service.GetProject(_id1, out error);
+			Assert.IsNotNull(proj, "AddNewProject_Test => failed to create project");
+			Assert.IsNotNull(proj.Id, "AddNewProject_Test => failed to create project id");
 		}
 
 
