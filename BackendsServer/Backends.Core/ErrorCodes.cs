@@ -19,5 +19,7 @@ namespace Backends.Core
 		ProjectCreationFailed =8,
 		SignUpError = 9,
 		UserIsNotFound = 10,
+		EntityNotFound = 11
+
 	}
 }

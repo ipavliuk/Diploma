@@ -11,6 +11,7 @@ using BackendsCommon.Logging;
 using BackendsCommon.Types;
 using Backends.Core.Utils;
 using AutoMapper;
+using Backends.Core.Extension;
 
 namespace Backends.Core.Services
 {
@@ -218,7 +219,22 @@ namespace Backends.Core.Services
 					return;
 				}
 
-				_repo.UpdateUserData(appId, userId, customFields).Wait();
+				//get User and  update
+				BacksUsers user = _repo.GetUser(appId, userId).Result;
+				if (user == null)
+				{
+					error = BacksErrorCodes.UserIsNotFound;
+					return;
+				}
+
+				var updatedData = user.Data;
+				foreach (var pair in customFields)
+				{
+					updatedData.CreateNewOrUpdateExisting(pair.Key, pair.Value);
+				}
+
+
+				_repo.UpdateUserData(appId, userId, updatedData).Wait();
 			}
 			catch (Exception e)
 			{
@@ -252,13 +268,24 @@ namespace Backends.Core.Services
 			error = BacksErrorCodes.Ok;
 			try
 			{
-				if (ValidateSession(appId, null, sessionToken, out error))
+				BacksSessions session = _repo.GetSession(appId, sessionToken).Result;
+
+				//if (ValidateSession(appId, null, sessionToken, out error))
+				if(session == null)
 				{
 					error = BacksErrorCodes.SessionIsNotFound;
 					return;
 				}
+				//Get Session and Update
+				
 
-				_repo.UpdateSession(appId, sessionToken, customFields).Wait();
+				var updatedData = session.Data;
+				foreach (var pair in customFields)
+				{
+					updatedData.CreateNewOrUpdateExisting(pair.Key, pair.Value);
+				}
+
+				_repo.UpdateSession(appId, sessionToken, updatedData).Wait();
 			}
 			catch (Exception e)
 			{

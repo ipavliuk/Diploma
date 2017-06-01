@@ -667,6 +667,93 @@ namespace BackendsCore.Test
 			Assert.IsNull(session1, "RemoveSession_Test => Remove failed for object");
 		}
 
+
+
+		[TestMethod]
+		public void CreateEnttity_Test()
+		{
+			string accId, projId;
+			CreateAccountProject(out accId, out projId);
+
+			var entity = new BacksObject()
+			{
+				AppId = projId,
+				Name = "GameScore",
+				CreatedAt = DateTime.Now,
+				Data = new Dictionary<string, object>()
+				{
+					{"score", 1337},
+					{"playerName","Jack wilkins"},
+					{"gameMode", "play"}
+				}
+			};
+			_repo.AddEntity(projId, entity).Wait();
+			Assert.AreNotEqual(entity.Id, null, "CreateEnttity_Test=> failed create Account");
+
+			BacksObject entity1 = _repo.GetEntity(projId, "GameScore", entity.Id).Result;
+			Assert.AreNotEqual(entity1.Id, null, "CreateEnttity_Test=> failed get Entity");
+			Assert.AreEqual(entity1.Id, entity.Id, "CreateEnttity_Test=> get wrong Entity");
+
+		}
+
+		[TestMethod]
+		public void GetUnvalidEnttity_Test()
+		{
+			string accId, projId;
+			CreateAccountProject(out accId, out projId);
+
+			BacksObject entity = _repo.GetEntity(projId, "GameScore", "592efa1972403627583425d4").Result;
+			Assert.IsNull(entity, "GetUnvalidEnttity_Test=> entity is prsetnt!!@!");
+			
+		}
+
+		[TestMethod]
+		public void UpdateAndRemoveEnttity_Test()
+		{
+			string accId, projId;
+			CreateAccountProject(out accId, out projId);
+
+			var entity = new BacksObject()
+			{
+				AppId = projId,
+				Name = "GameScore",
+				CreatedAt = DateTime.Now,
+				Data = new Dictionary<string, object>()
+				{
+					{"score", 1337},
+					{"playerName","Jack wilkins"},
+					{"gameMode", "play"}
+				}
+			};
+
+			_repo.AddEntity(projId, entity).Wait();
+			Assert.AreNotEqual(entity.Id, null, "UpdateAndRemoveEnttity_Test=> failed add entity");
+
+
+			var newDict = new Dictionary<string, object>()
+			{
+				{"score", 78888},
+				{"hit", 15}
+			};
+
+			var oldDict = entity.Data;
+			foreach (var pair in newDict)
+			{
+				oldDict.CreateNewOrUpdateExisting(pair.Key, pair.Value);
+			}
+
+			_repo.UpdateEntity(projId, "GameScore", entity.Id, oldDict);
+
+			BacksObject entity1 = _repo.GetEntity(projId, "GameScore", entity.Id).Result;
+			Assert.AreNotEqual(entity1.Id, null, "UpdateAndRemoveEnttity_Test=> failed get Entity");
+			Assert.AreEqual(entity1.Id, entity.Id, "UpdateAndRemoveEnttity_Test=> get wrong Entity");
+
+			_repo.RemoveEntity(projId, "GameScore", entity.Id).Wait();
+
+			BacksObject entity2 = _repo.GetEntity(projId, "GameScore", entity.Id).Result;
+			Assert.AreEqual(entity2, null, "UpdateAndRemoveEnttity_Test=> Entity wasn't deleted");
+
+		}
 		#endregion
 
 	}
