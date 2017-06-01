@@ -17,6 +17,7 @@ namespace Backends.Core
 		NotAllMandatFields = 6,
 		DuplicateLogin = 7,
 		ProjectCreationFailed =8,
-		SignUpError = 9
+		SignUpError = 9,
+		UserIsNotFound = 10,
 	}
 }

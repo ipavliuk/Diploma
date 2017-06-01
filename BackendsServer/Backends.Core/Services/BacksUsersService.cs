@@ -132,42 +132,164 @@ namespace Backends.Core.Services
 
 			return null;
 		}
+		//KillSession
 
-		public void Logout()
+		public void Logout(string appId, string userId, string sessionId, out BacksErrorCodes error)
 		{
-
+			error = BacksErrorCodes.Ok;
+			try
+			{
+				if(ValidateSession(appId, userId, sessionId, out error) && error == BacksErrorCodes.Ok)
+				{
+					_repo.RemoveSession(appId, sessionId).Wait();
+				}
+					
+			}
+			catch (Exception e)
+			{
+				_log.Error("Logout exception : ", e);
+				error = BacksErrorCodes.SystemError;
+			}
 		}
 
-		public void GetUser()
+		public void RemoveUser(string appId, string userId, out BacksErrorCodes error)
 		{
+			error = BacksErrorCodes.Ok;
+			try
+			{
+				_repo.RemoveUser(appId, userId).Wait();
 			
+			}
+			catch (Exception e)
+			{
+				_log.Error("RemoveUser exception : ", e);
+				error = BacksErrorCodes.SystemError;
+			}
 		}
-
-		public void UpdateUser()
+	
+		public bool ValidateSession(string appId, string userId, string sessionId, out BacksErrorCodes error)
 		{
-			
+			error = BacksErrorCodes.Ok;
+			try
+			{
+				BacksSessions session = _repo.GetSession(appId, sessionId).Result;
+				return string.IsNullOrEmpty(userId) && session !=null ? session != null : session.PUser == userId;
+			}
+			catch (Exception e)
+			{
+				_log.Error("ValidateSession exception : ", e);
+				error = BacksErrorCodes.SystemError;
+			}
+			return false;
 		}
 
+		public UserDto GetUser(string appId, string userId, out BacksErrorCodes error)
+		{
+			error = BacksErrorCodes.Ok;
+			try
+			{
+				BacksUsers user = _repo.GetUser(appId, userId).Result;
+				if (user == null)
+				{
+					error = BacksErrorCodes.UserIsNotFound;
+					return null;
+				}
+
+				var mappedUser = Mapper.Map<BacksUsers, UserDto>(user);
+
+				return mappedUser;
+			}
+			catch (Exception e)
+			{
+				_log.Error("GetUser exception : ", e);
+				error = BacksErrorCodes.SystemError;
+			}
+			return null;
+		}
+
+		public void UpdateUser(string appId, string userId, string sessionToken, Dictionary<string, object> customFields, out BacksErrorCodes error)
+		{
+			error = BacksErrorCodes.Ok;
+			try
+			{
+				if (ValidateSession(appId, userId, sessionToken, out error))
+				{
+					error = BacksErrorCodes.SessionIsNotFound;
+					return;
+				}
+
+				_repo.UpdateUserData(appId, userId, customFields).Wait();
+			}
+			catch (Exception e)
+			{
+				_log.Error("UpdateUser exception : ", e);
+				error = BacksErrorCodes.SystemError;
+			}
+		}
 		public void QueryUserData()
 		{
-			
+
 		}
 
-		public void PasswrodReset()
+		public void PasswrodReset(string appId, string userId, string pwd, out BacksErrorCodes error)
 		{
-			
+			error = BacksErrorCodes.Ok;
+			try
+			{
+				_repo.UpdateUserPasswrod(appId, userId, pwd).Wait();
+				//send email
+			}
+			catch (Exception e)
+			{
+				_log.Error("PasswrodReset exception : ", e);
+				error = BacksErrorCodes.SystemError;
+			}
+
 		}
 
+		public void UpdateSession(string appId, string sessionToken, Dictionary<string, object> customFields, out BacksErrorCodes error)
+		{
+			error = BacksErrorCodes.Ok;
+			try
+			{
+				if (ValidateSession(appId, null, sessionToken, out error))
+				{
+					error = BacksErrorCodes.SessionIsNotFound;
+					return;
+				}
+
+				_repo.UpdateSession(appId, sessionToken, customFields).Wait();
+			}
+			catch (Exception e)
+			{
+				_log.Error("UpdateUser exception : ", e);
+				error = BacksErrorCodes.SystemError;
+			}
+		}
+		public void RemoveSession(string appId, string sessionId, out BacksErrorCodes error)
+		{
+			error = BacksErrorCodes.Ok;
+			try
+			{
+				_repo.RemoveSession(appId, sessionId).Wait();
+
+			}
+			catch (Exception e)
+			{
+				_log.Error("RemoveSession exception : ", e);
+				error = BacksErrorCodes.SystemError;
+			}
+		}
+		
 		public SessionDto GetSession(string appId, string sessionId, out BacksErrorCodes error)
 		{
 			error = BacksErrorCodes.Ok;
 			try
 			{
-
 				var session = _repo.GetSession(appId, sessionId).Result;
-				if (session.Id == null)
+				if (session == null)
 				{
-					error = BacksErrorCodes.AuthFailed;
+					error = BacksErrorCodes.SessionIsNotFound;
 					return null;
 				}
 
@@ -185,6 +307,45 @@ namespace Backends.Core.Services
 			catch (Exception e)
 			{
 				_log.Error("GetSession exception : ", e);
+				error = BacksErrorCodes.SystemError;
+			}
+
+			return null;
+		}
+
+		public List<SessionDto> GetUserSession(string appId, string sessionId, out BacksErrorCodes error)
+		{
+			error = BacksErrorCodes.Ok;
+			try
+			{
+				var sessions = _repo.GetAllSessions(appId, sessionId).Result;
+				if (sessions == null)
+				{
+					error = BacksErrorCodes.SessionIsNotFound;
+					return null;
+				}
+
+				var sessionsDto = new List<SessionDto>();
+
+				foreach (var item in sessions)
+				{
+					var sessionDto = new SessionDto()
+					{
+						Token = item.Id,
+						PUser = item.PUser,
+						CreatedAt = item.CreatedAt,
+						ExpiresAt = item.ExpiresAt
+					};
+
+					sessionsDto.Add(sessionDto);
+				}
+				
+
+				return sessionsDto;
+			}
+			catch (Exception e)
+			{
+				_log.Error("GetUserSession exception : ", e);
 				error = BacksErrorCodes.SystemError;
 			}
 

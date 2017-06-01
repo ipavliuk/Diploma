@@ -71,6 +71,7 @@
     <Compile Include="Extension\DictionaryExtensions.cs" />
     <Compile Include="Extension\ObjectExtensions.cs" />
     <Compile Include="Extension\TypeExtensions.cs" />
+    <Compile Include="Model\BackAdminData\ObjectsDto.cs" />
     <Compile Include="Model\BackAdminData\SessionDto.cs" />
     <Compile Include="Model\BackAdminData\UserDto.cs" />
     <Compile Include="Services\SchemaHandler.cs" />
