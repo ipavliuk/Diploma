@@ -20,7 +20,6 @@ namespace Backends.Core.DataEngine
 		{
 			_context = new BackendsContext(config.ConnectionString, config.Database);
 		}
-
 		public async Task<IList<Account>> GetAllAccounts()
 		{
 			try
@@ -32,7 +31,6 @@ namespace Backends.Core.DataEngine
 				_log.Error("Exception in GetAllAccounts", e);
 				throw;
 			}
-
 		}
 		public async Task AddAccount(Account acc)
 		{//Validate screenname
@@ -45,7 +43,6 @@ namespace Backends.Core.DataEngine
 				_log.Error("Exception in AddAccount" , e);
 				throw;
 			}
-			
 		}
 		public async Task UpdateAccount(string id, string pwd, string firstName, string lastName, string email)
 		{
@@ -53,13 +50,10 @@ namespace Backends.Core.DataEngine
 			{
 				var filter = Builders<Account>.Filter.Eq(s => s.Id, id);
 				var updater = Builders<Account>.Update;
-
 				var update = Builders<Account>.Update
 								.Set(s => s.FirstName, firstName)
 								.Set(s => s.LastName, lastName)
 								.Set(s => s.Email, email);
-				//.CurrentDate(s => s.);
-
 				await _context.Accounts.UpdateOneAsync(filter, update);
 			}
 			catch (Exception e)
@@ -83,7 +77,6 @@ namespace Backends.Core.DataEngine
 				_log.Error("Exception in GetAccount", e);
 				throw;
 			}
-			
 		}
 		public async Task<Account> Login(string login, string pwd)
 		{
@@ -100,7 +93,6 @@ namespace Backends.Core.DataEngine
 				_log.Error("Exception in Login", e);
 				throw;
 			}
-
 		}
 		public async Task RemoveAccount(string accId)
 		{
@@ -115,7 +107,6 @@ namespace Backends.Core.DataEngine
 			}
 			
 		}
-
 		public async Task<IList<Account>> FindDuplicates(string login)
 		{
 			try
@@ -156,7 +147,6 @@ namespace Backends.Core.DataEngine
 				_log.Error("Exception in GetProject", e);
 				throw;
 			}
-			
 		}
 		public async Task UpdateProject(string projId)
 		{
@@ -173,7 +163,6 @@ namespace Backends.Core.DataEngine
 				_log.Error("Exception in RemoveProject", e);
 				throw;
 			}
-		
 		}
 		public async Task<IList<Project>> GetAccountProjects(string accId)
 		{
@@ -187,9 +176,7 @@ namespace Backends.Core.DataEngine
 				_log.Error("Exception in GetAccountProjects", e);
 				throw;
 			}
-			
 		}
-
 		public async Task<IList<Project>> GetAllProject()
 		{
 			try
@@ -202,7 +189,6 @@ namespace Backends.Core.DataEngine
 				throw;
 			}
 		}
-
 		public async Task Add_Schema(BacksProjectSchema schema)
 		{
 			try
@@ -215,23 +201,20 @@ namespace Backends.Core.DataEngine
 				throw;
 			}
 		}
-
-        public async Task<BacksProjectSchema> GetSchema(string appId)
-        {
-            try
-            {
-                
-                var filter = Builders<BacksProjectSchema>.Filter.Eq(s=>s.AppId, appId);
-                return await _context._Schema.Find(filter).FirstOrDefaultAsync(); 
-            }
-            catch (Exception e)
-            {
-                _log.Error("Exception in GetSchema", e);
-                throw;
-            }
-        }
-
-        public void CreateCollection(string name, BsonDocument validator)
+		public async Task<BacksProjectSchema> GetSchema(string appId)
+		{
+			try
+			{
+				var filter = Builders<BacksProjectSchema>.Filter.Eq(s=>s.AppId, appId);
+				return await _context._Schema.Find(filter).FirstOrDefaultAsync(); 
+			}
+			catch (Exception e)
+			{
+				_log.Error("Exception in GetSchema", e);
+				throw;
+			}
+}
+		public void CreateCollection(string name, BsonDocument validator)
 		{
 			try
 			{
@@ -243,7 +226,6 @@ namespace Backends.Core.DataEngine
 				throw;
 			}
 		}
-
 		public void DropDB(string name)
 		{
 			_context.DropDB(name);
