@@ -72,9 +72,13 @@
     <Compile Include="Extension\DictionaryExtensions.cs" />
     <Compile Include="Extension\ObjectExtensions.cs" />
     <Compile Include="Extension\TypeExtensions.cs" />
+    <Compile Include="Model\BackAdminData\BaseData.cs" />
+    <Compile Include="Model\BackAdminData\Entities.cs" />
     <Compile Include="Model\BackAdminData\ObjectsDto.cs" />
     <Compile Include="Model\BackAdminData\SessionDto.cs" />
     <Compile Include="Model\BackAdminData\UserDto.cs" />
+    <Compile Include="Services\BacksObjectServiceAsync.cs" />
+    <Compile Include="Services\BacksUsersServiceAsync.cs" />
     <Compile Include="Services\SchemaHandler.cs" />
     <Compile Include="ErrorCodes.cs" />
     <Compile Include="Model\BackAdminData\Account.cs" />

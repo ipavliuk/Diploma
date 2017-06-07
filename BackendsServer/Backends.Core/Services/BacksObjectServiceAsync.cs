@@ -1,25 +1,24 @@
-﻿using AutoMapper;
-using Backends.Core.DataEngine;
-using Backends.Core.Model;
-using Backends.Core.Model.BackAdminData;
-using BackendsCommon.Logging;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
+using Backends.Core.DataEngine;
 using Backends.Core.Extension;
+using Backends.Core.Model.BackAdminData;
+using BackendsCommon.Logging;
 using BackendsCommon.Types;
 
 namespace Backends.Core.Services
 {
-	public class BacksObjectService
+	public class BacksObjectServiceAsync
 	{
 		private readonly SchemaHandler _handler;
 		private readonly IRepositoryAsync _repo;
 		private ILog _log = new Log(typeof(BacksUsersService));
 
-		public BacksObjectService(IRepositoryAsync repository)
+		public BacksObjectServiceAsync(IRepositoryAsync repository)
 		{
 			_repo = repository;
 			_handler = new SchemaHandler(_repo);
@@ -29,9 +28,10 @@ namespace Backends.Core.Services
 			});
 		}
 
-		public ObjectsDto CreateEntity(string appId, string name, Dictionary<string,object> data, out BacksErrorCodes error)
+		public async Task<ObjectsDto> CreateEntity(string appId, string name, Dictionary<string, object> data/*, out BacksErrorCodes error*/)
 		{
-			error = BacksErrorCodes.Ok;
+			var error = BacksErrorCodes.Ok;
+			var obj = new ObjectsDto();
 			try
 			{
 
@@ -41,18 +41,19 @@ namespace Backends.Core.Services
 					Data = data,
 					CreatedAt = DateTime.UtcNow,
 					Name = name
-					
+
 				};
-				 _repo.AddEntity(appId, entity);
+				await _repo.AddEntity(appId, entity).ConfigureAwait(false);
 
 				if (entity.Id == null)
 				{
-					error = BacksErrorCodes.SystemError;
-					return null;
+					obj.Error = BacksErrorCodes.SystemError;
+					return obj;
 				}
 
 				return new ObjectsDto()
 				{
+					Error = BacksErrorCodes.Ok,
 					Id = entity.Id,
 					CreatedAt = entity.CreatedAt.Value
 				};
@@ -66,16 +67,15 @@ namespace Backends.Core.Services
 			return null;
 		}
 
-		public ObjectsDto GetEntity(string appId, string name, string entityId, out BacksErrorCodes error)
+		public async Task<ObjectsDto> GetEntity(string appId, string name, string entityId/*, out BacksErrorCodes error*/)
 		{
-			error = BacksErrorCodes.Ok;
+			var error = BacksErrorCodes.Ok;
 			try
 			{
-				BacksObject entity = _repo.GetEntity(appId, name, entityId).Result;
+				BacksObject entity = await _repo.GetEntity(appId, name, entityId).ConfigureAwait(false);
 				if (entity == null)
 				{
-					error = BacksErrorCodes.EntityNotFound;
-					return null;
+					return new ObjectsDto() { Error = BacksErrorCodes.EntityNotFound }; ;
 				}
 
 				var mappedEntity = Mapper.Map<BacksObject, ObjectsDto>(entity);
@@ -91,14 +91,14 @@ namespace Backends.Core.Services
 			return null;
 		}
 
-		public ObjectsDto UpdateEntity(string appId, string entityName, string entityId, 
-					Dictionary<string, object> data, out BacksErrorCodes error)
+		public async Task<ObjectsDto> UpdateEntity(string appId, string entityName, string entityId,
+					Dictionary<string, object> data/*, out BacksErrorCodes error*/)
 		{
-			error = BacksErrorCodes.Ok;
+			var error = BacksErrorCodes.Ok;
 			try
 			{
 
-				BacksObject entity = _repo.GetEntity(appId, entityName, entityId).Result;
+				BacksObject entity = await _repo.GetEntity(appId, entityName, entityId).ConfigureAwait(false);
 				if (entity == null)
 				{
 					error = BacksErrorCodes.EntityNotFound;
@@ -111,9 +111,9 @@ namespace Backends.Core.Services
 					updatedData.CreateNewOrUpdateExisting(pair.Key, pair.Value);
 				}
 
-				_repo.UpdateEntity(appId, entityName, entityId, updatedData);
+				await _repo.UpdateEntity(appId, entityName, entityId, updatedData).ConfigureAwait(false);
 
-				return new ObjectsDto() {UpdatedAt = DateTime.UtcNow};
+				return new ObjectsDto() { UpdatedAt = DateTime.UtcNow };
 			}
 			catch (Exception e)
 			{
@@ -138,12 +138,13 @@ namespace Backends.Core.Services
 			return null;
 		}
 
-		public ObjectsDto RemoveEntity(string appId, string entityName, string entityId, out BacksErrorCodes error)
+		public async Task<ObjectsDto> RemoveEntity(string appId, string entityName, string entityId/*, out BacksErrorCodes error*/)
 		{
-			error = BacksErrorCodes.Ok;
+			var error = BacksErrorCodes.Ok;
 			try
 			{
-				_repo.RemoveEntity(appId, entityName, entityId).Wait();
+				await  _repo.RemoveEntity(appId, entityName, entityId).ConfigureAwait(false);
+				return new ObjectsDto() { UpdatedAt = DateTime.UtcNow };
 			}
 			catch (Exception e)
 			{
@@ -153,4 +154,5 @@ namespace Backends.Core.Services
 			return null;
 		}
 	}
+
 }

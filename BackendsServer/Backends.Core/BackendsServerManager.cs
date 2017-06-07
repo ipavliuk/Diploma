@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Backends.Core.Config;
+using Backends.Core.DataEngine;
+using Backends.Core.Services;
 
 namespace Backends.Core
 {
@@ -18,6 +21,24 @@ namespace Backends.Core
 		{
 			get
 			{ return _instance.Value; }
+		}
+
+		private BacksUsersServiceAsync _userService;
+
+		private BacksObjectServiceAsync _dataService;
+		
+		public BacksUsersServiceAsync UserService { get { return _userService; } }
+		public BacksObjectServiceAsync DataService { get { return _dataService; } }
+		public void Start(string connectionStr, string database)
+		{
+			var config = new Configuration
+			{
+				ConnectionString = string.IsNullOrEmpty(connectionStr) ? "mongodb://localhost:27017" : connectionStr,
+				Database = string.IsNullOrEmpty(database) ? "BackendsDatabase" : database
+			};
+			_userService = new BacksUsersServiceAsync(new BacksRepository(config));
+
+			_dataService = new BacksObjectServiceAsync(new BacksRepository(config));
 		}
 
 		#endregion

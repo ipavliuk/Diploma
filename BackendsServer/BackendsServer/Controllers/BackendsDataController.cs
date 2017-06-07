@@ -5,7 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Threading.Tasks;
 using System.Web.Http;
+using Backends.Core.Model.BackAdminData;
 
 namespace BackendsServer.Controllers
 {
@@ -17,19 +19,18 @@ namespace BackendsServer.Controllers
 		#region _BObjects
 		[HttpPost]
 		[Route("v1/entities/{entityName}")]
-		public BaseRespones CreateEntity(string entityName)
+		public async Task<ObjectsDto> CreateEntity(string entityName, Dictionary<string, object> data)
 		{
-			var response = new BaseRespones();
+			var response = new ObjectsDto();
 			try
 			{
 				BacksErrorCodes errorCode = ValidateAppCredentialHeaders();
 				if(errorCode == BacksErrorCodes.Ok)
 				{
-
+					var service = BackendsServerManager.Instance.DataService;
+					 response = await service.CreateEntity(AppId, entityName, data);
 				}
-
-				response.ErrorId = (int)errorCode;
-
+				//response.ErrorId = (int)errorCode;
 			}
 			catch (Exception ex)
 			{
@@ -40,18 +41,19 @@ namespace BackendsServer.Controllers
 
 		[HttpGet]
 		[Route("v1/entities/{entityName}/{entityId}")]
-		public BaseRespones GetEntity(string entityName, string entityId)
+		public async Task<ObjectsDto> GetEntity(string entityName, string entityId)
 		{
-			var response = new BaseRespones();
+			var response = new ObjectsDto();
 			try
 			{
 				BacksErrorCodes errorCode = ValidateAppCredentialHeaders();
 				if (errorCode == BacksErrorCodes.Ok)
 				{
-
+					var service = BackendsServerManager.Instance.DataService;
+					response = await service.GetEntity(AppId, entityName, entityId);
 				}
 
-				response.ErrorId = (int)errorCode;
+				//response.Error = string.IsNullOrEmpty(response.Id)? BacksErrorCodes.SystemError : BacksErrorCodes.Ok ;
 
 			}
 			catch (Exception ex)
@@ -63,18 +65,17 @@ namespace BackendsServer.Controllers
 
 		[HttpPut]
 		[Route("v1/entities/{entityName}/{entityId}")]
-		public BaseRespones UpdateEntity(string entityName, string entityId)
+		public async Task<ObjectsDto> UpdateEntity(string entityName, string entityId, Dictionary<string, object> data)
 		{
-			var response = new BaseRespones();
+			var response = new ObjectsDto();
 			try
 			{
 				BacksErrorCodes errorCode = ValidateAppCredentialHeaders();
 				if (errorCode == BacksErrorCodes.Ok)
 				{
-
+					var service = BackendsServerManager.Instance.DataService;
+					response = await service.UpdateEntity(AppId, entityName, entityId, data);
 				}
-
-				response.ErrorId = (int)errorCode;
 
 			}
 			catch (Exception ex)
@@ -86,9 +87,10 @@ namespace BackendsServer.Controllers
 
 		[HttpGet]
 		[Route("v1/entities")]
-		public BaseRespones GetEntities()
+		public async Task<List<ObjectsDto>> GetEntities()
 		{
-			var response = new BaseRespones();
+			//var response = new BaseRespones();
+			var response = new List<ObjectsDto>();
 			try
 			{
 				BacksErrorCodes errorCode = ValidateAppCredentialHeaders();
@@ -97,7 +99,7 @@ namespace BackendsServer.Controllers
 
 				}
 
-				response.ErrorId = (int)errorCode;
+				//response.ErrorId = (int)errorCode;
 
 			}
 			catch (Exception ex)
@@ -109,18 +111,19 @@ namespace BackendsServer.Controllers
 
 		[HttpDelete]
 		[Route("v1/entities/{entityName}/{entityId}")]
-		public BaseRespones DeleteEntity(string entityName, string entityId)
+		public async Task<ObjectsDto> DeleteEntity(string entityName, string entityId)
 		{
-			var response = new BaseRespones();
+			var response = new ObjectsDto();
 			try
 			{
 				BacksErrorCodes errorCode = ValidateAppCredentialHeaders();
 				if (errorCode == BacksErrorCodes.Ok)
 				{
-
+					var service = BackendsServerManager.Instance.DataService;
+					response = await service.RemoveEntity(AppId, entityName, entityId);
 				}
 
-				response.ErrorId = (int)errorCode;
+				//response.ErrorId = (int)errorCode;
 
 			}
 			catch (Exception ex)
@@ -135,18 +138,19 @@ namespace BackendsServer.Controllers
 		[HttpPost]
 		[Route("v1/users")]
 		//create user
-		public BaseRespones SignIn()
+		public async Task<UserDto> SignIn([FromBody] UserSignUpRequest request/*string username, string password, string email*/)
 		{
-			var response = new BaseRespones();
+			var response = new UserDto();
 			try
 			{
 				BacksErrorCodes errorCode = ValidateAppCredentialHeaders();
 				if (errorCode == BacksErrorCodes.Ok)
 				{
-
+					var service = BackendsServerManager.Instance.UserService;
+					response = await service.SignUp(AppId, request.email, request.username, request.password);
 				}
 
-				response.ErrorId = (int)errorCode;
+				//response.ErrorId = (int)errorCode;
 
 			}
 			catch (Exception ex)
@@ -158,18 +162,19 @@ namespace BackendsServer.Controllers
 
 		[HttpGet]
 		[Route("v1/login")]
-		public BaseRespones Login(string userName, string pwd)
+		public async Task<UserDto> Login(string userName, string pwd)
 		{
-			var response = new BaseRespones();
+			var response = new UserDto();
 			try
 			{
 				BacksErrorCodes errorCode = ValidateAppCredentialHeaders();
 				if (errorCode == BacksErrorCodes.Ok)
 				{
-
+					var service = BackendsServerManager.Instance.UserService;
+					response = await service.Login(AppId, userName, pwd);
 				}
 
-				response.ErrorId = (int)errorCode;
+				//response.ErrorId = (int)errorCode;
 
 			}
 			catch (Exception ex)
@@ -246,28 +251,28 @@ namespace BackendsServer.Controllers
 			return response;
 		}
 
-		[HttpGet]
-		[Route("v1/users")]
-		public BaseRespones GetUsers()
-		{
-			var response = new BaseRespones();
-			try
-			{
-				BacksErrorCodes errorCode = ValidateAppCredentialHeaders();
-				if (errorCode == BacksErrorCodes.Ok)
-				{
+		//[HttpGet]
+		//[Route("v1/users")]
+		//public BaseRespones GetUsers()
+		//{
+		//	var response = new BaseRespones();
+		//	try
+		//	{
+		//		BacksErrorCodes errorCode = ValidateAppCredentialHeaders();
+		//		if (errorCode == BacksErrorCodes.Ok)
+		//		{
 
-				}
+		//		}
 
-				response.ErrorId = (int)errorCode;
+		//		response.ErrorId = (int)errorCode;
 
-			}
-			catch (Exception ex)
-			{
-				_log.Error("Exception in GetUsers", ex);
-			}
-			return response;
-		}
+		//	}
+		//	catch (Exception ex)
+		//	{
+		//		_log.Error("Exception in GetUsers", ex);
+		//	}
+		//	return response;
+		//}
 
 		[HttpDelete]
 		[Route("v1/users/{userId}")]

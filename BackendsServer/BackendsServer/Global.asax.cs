@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Web;
 using System.Web.Http;
 using System.Web.Routing;
+using Backends.Core;
 
 namespace BackendsServer
 {
@@ -13,7 +15,9 @@ namespace BackendsServer
         {
             GlobalConfiguration.Configure(WebApiConfig.Register);
 
+			BackendsServerManager.Instance.Start(ConfigurationManager.AppSettings["connectionStringMongoDB"],
+								ConfigurationManager.AppSettings["database"]);
 
-        }
+		}
     }
 }
