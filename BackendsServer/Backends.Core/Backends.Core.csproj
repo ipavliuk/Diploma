@@ -77,6 +77,7 @@
     <Compile Include="Model\BackAdminData\ObjectsDto.cs" />
     <Compile Include="Model\BackAdminData\SessionDto.cs" />
     <Compile Include="Model\BackAdminData\UserDto.cs" />
+    <Compile Include="Services\BacksDashboardServiceAsync.cs" />
     <Compile Include="Services\BacksObjectServiceAsync.cs" />
     <Compile Include="Services\BacksUsersServiceAsync.cs" />
     <Compile Include="Services\SchemaHandler.cs" />

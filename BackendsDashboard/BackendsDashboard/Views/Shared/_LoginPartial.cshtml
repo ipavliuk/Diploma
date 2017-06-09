@@ -1,0 +1,32 @@
+﻿@using BackendsDashboard.Controllers
+
+@*@if (ViewBag.IsAuthenticated)*@
+@if(HomeController.IsValid())
+{
+    using (Html.BeginForm("LogOff", "Home", FormMethod.Post, new { id = "logoutForm", @class = "navbar-right" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <ul class="nav navbar-nav navbar-right">
+            <li>   
+                @*Hello " + @SessionBag.Current.AccountName + "!", "ManageAccount"*@
+
+                @{
+                    string name= @SessionBag.Current.AccountName;
+                }
+                
+                @*@Html.ActionLink("Hello " + name + "!", "ManageAccount", "Home", routeValues: null, htmlAttributes: new {title = "Manage"})*@
+                @Html.ActionLink("Проекти користувача", "GetAllProjects", "Home", routeValues: null, htmlAttributes: new { title = "Manage" })
+                @Html.ActionLink("Додати проект", "AddProject", "Home", routeValues: null, htmlAttributes: new {title = "Manage"})
+            </li>
+            <li><a href="javascript:document.getElementById('logoutForm').submit()">Log off</a></li>
+        </ul>
+    }
+}
+else
+{
+    <ul class="nav navbar-nav navbar-right">
+        <li>@Html.ActionLink("Register", "Register", "Home", routeValues: null, htmlAttributes: new { id = "registerLink" })</li>
+        <li>@Html.ActionLink("Log in", "Login", "Home", routeValues: null, htmlAttributes: new { id = "loginLink" })</li>
+    </ul>
+}

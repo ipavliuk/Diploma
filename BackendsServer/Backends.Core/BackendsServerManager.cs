@@ -29,6 +29,10 @@ namespace Backends.Core
 		
 		public BacksUsersServiceAsync UserService { get { return _userService; } }
 		public BacksObjectServiceAsync DataService { get { return _dataService; } }
+
+		private BacksDashboardServiceAsync _adminService;
+		public BacksDashboardServiceAsync AdminService { get { return _adminService; } }
+
 		public void Start(string connectionStr, string database)
 		{
 			var config = new Configuration
@@ -39,6 +43,8 @@ namespace Backends.Core
 			_userService = new BacksUsersServiceAsync(new BacksRepository(config));
 
 			_dataService = new BacksObjectServiceAsync(new BacksRepository(config));
+
+			_adminService = new BacksDashboardServiceAsync(new BacksRepository(config));
 		}
 
 		#endregion

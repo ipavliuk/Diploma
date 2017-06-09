@@ -21,5 +21,8 @@ namespace Backends.Core.Model
 		public string email { get; set; }
 
 		public List<ProjectDto> Projects{ get; set; }
+
+		public BacksErrorCodes Error { get; set; }
+
 	}
 }
