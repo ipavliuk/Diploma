@@ -123,9 +123,9 @@ namespace Backends.Core.Services
 			return null;
 		}
 
-		public ObjectsDto QueryEntity(string appId, string entityId, out BacksErrorCodes error)
+		public async Task<Tuple<BacksErrorCodes, List<ObjectsDto>>> QueryEntity(string appId, string entityId)
 		{
-			error = BacksErrorCodes.Ok;
+			var error = BacksErrorCodes.Ok;
 			try
 			{
 
@@ -137,6 +137,43 @@ namespace Backends.Core.Services
 			}
 			return null;
 		}
+
+		public async Task<Tuple<BacksErrorCodes, List<ObjectsDto>>> GetEntities(string appId, string entityName)
+		{
+			var error = BacksErrorCodes.Ok;
+			var objects = new List<ObjectsDto>();
+			try
+			{
+				List<BacksObject> entities = await _repo.GetAllEntity(appId, entityName).ConfigureAwait(false);
+				if (entities == null)
+				{
+					error = BacksErrorCodes.EntityNotFound;
+					return new Tuple<BacksErrorCodes, List<ObjectsDto>>(error, objects);
+				}
+
+				
+				foreach (var item in entities)
+				{
+					objects.Add(new ObjectsDto()
+					{
+						Id = item.Id,
+						Name = item.Name,
+						Data = item.Data,
+						CreatedAt = item.CreatedAt,
+						UpdatedAt = item.UpdatedAt
+					});
+				}
+
+				//return new Tuple<BacksErrorCodes, List<ObjectsDto>>(error, objects);
+			}
+			catch (Exception e)
+			{
+				_log.Error("GetEntities exception : ", e);
+				error = BacksErrorCodes.SystemError;
+			}
+			return new Tuple<BacksErrorCodes, List<ObjectsDto>>(error, objects);
+		}
+
 
 		public async Task<ObjectsDto> RemoveEntity(string appId, string entityName, string entityId/*, out BacksErrorCodes error*/)
 		{

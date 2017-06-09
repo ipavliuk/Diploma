@@ -39,6 +39,10 @@ namespace BackendsCommon.Types
 			set { data = value; }
 		}
 
+		public BacksObject()
+		{
+			
+		}
 
 	/*	public IEnumerator<KeyValuePair<string, object>> GetEnumerator()
 		{

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Web;
 using System.Web.Http;
@@ -159,9 +160,28 @@ namespace BackendsServer.Controllers
 			return Request.CreateResponse(HttpStatusCode.OK);
 		}
 
+		private readonly ReadOnlyDictionary<BacksErrorCodes, string> _backsErrorsMapping = new ReadOnlyDictionary
+			<BacksErrorCodes, string>(
+			new Dictionary<BacksErrorCodes, string>()
+			{
+				{ BacksErrorCodes.Ok, "Ok"},
+				{ BacksErrorCodes.SystemError, " System Error"},
+				{BacksErrorCodes.AuthFailed, " Authentication Failed"},
+				{BacksErrorCodes.OperationIsNotSupported, "Operation is not supported" },
+				{ BacksErrorCodes.InvalidCredentials, "Invalid creadentials"},
+				{ BacksErrorCodes.SessionIsNotFound,"Session is not found"},
+				{BacksErrorCodes.NotAllMandatFields, "Missed mandatory fields"},
+				{BacksErrorCodes.DuplicateLogin, "The record with the same login found"},
+				{BacksErrorCodes.ProjectCreationFailed, "Project could not be created"},
+				{BacksErrorCodes.SignUpError, "Signup error"},
+				{BacksErrorCodes.UserIsNotFound, "User is not found"},
+				{BacksErrorCodes.EntityNotFound,"Entity is notFound"}
+				
+			});
+
 		protected HttpResponseMessage FormErrorResponse(BacksErrorCodes errorCode)
 		{
-			return Request.CreateResponse(HttpStatusCode.OK, new BaseRespones() { ErrorId = (int)errorCode });
+			return Request.CreateResponse(HttpStatusCode.OK, new BaseRespones() { ErrorId = (int)errorCode , ErrorDesc = _backsErrorsMapping[errorCode] });
 		}
 
 		protected NameValueCollection GetQueryParameter()

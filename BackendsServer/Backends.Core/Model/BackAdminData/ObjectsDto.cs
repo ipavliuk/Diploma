@@ -24,7 +24,7 @@ namespace Backends.Core.Model.BackAdminData
 		
 		public ObjectsDto()
 		{
-			//Data = new Dictionary<string, object>();
+			Data = new Dictionary<string, object>();
 		}
 	}
 }

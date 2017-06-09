@@ -86,17 +86,27 @@ namespace BackendsServer.Controllers
 		}
 
 		[HttpGet]
-		[Route("v1/entities")]
-		public async Task<List<ObjectsDto>> GetEntities()
+		[Route("v1/entities/{entityName}")]
+		public async Task<HttpResponseMessage> GetEntities(string entityName/*, string condition*/)
 		{
-			//var response = new BaseRespones();
 			var response = new List<ObjectsDto>();
+			BacksErrorCodes errorCode = BacksErrorCodes.Ok;
 			try
 			{
-				BacksErrorCodes errorCode = ValidateAppCredentialHeaders();
+				errorCode = ValidateAppCredentialHeaders();
 				if (errorCode == BacksErrorCodes.Ok)
 				{
+					var service = BackendsServerManager.Instance.DataService;
 
+					var tuple  = await service.GetEntities(AppId, entityName);
+					if (tuple == null)
+					{
+						errorCode = BacksErrorCodes.SystemError;
+						return FormResponse(errorCode, response);
+					}
+
+					errorCode = tuple.Item1;
+					response = tuple.Item2;
 				}
 
 				//response.ErrorId = (int)errorCode;
@@ -106,7 +116,8 @@ namespace BackendsServer.Controllers
 			{
 				_log.Error("Exception in GetEntities", ex);
 			}
-			return response;
+
+			return FormResponse(errorCode, response);
 		}
 
 		[HttpDelete]
