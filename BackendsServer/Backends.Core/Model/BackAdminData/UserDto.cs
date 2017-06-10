@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Backends.Core.Model.BackAdminData
 {
 	[DataContract]
-	public class UserDto : BaseData
+	public class UserDto //: BaseData
 	{
 		public UserDto()
 		{

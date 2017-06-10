@@ -32,7 +32,7 @@ namespace Backends.Core.Services
 		}
 
 
-		public async Task<UserDto> SignUp(string appId, string email, string userName, string pwd/*, out BacksErrorCodes error*/) // create user
+		public async Task<Tuple<BacksErrorCodes, UserDto>> SignUp(string appId, string email, string userName, string pwd/*, out BacksErrorCodes error*/) // create user
 		{
 			var error = BacksErrorCodes.Ok;
 			try
@@ -49,13 +49,13 @@ namespace Backends.Core.Services
 				var users = await _repo.FindDuplicates(userName).ConfigureAwait(false);
 				if (users.Any())
 				{
-					return new UserDto() { Error = BacksErrorCodes.DuplicateLogin };
+					return new Tuple<BacksErrorCodes, UserDto>(BacksErrorCodes.DuplicateLogin, null);
 				}
 
 				await  _repo.AddUser(appId, user).ConfigureAwait(false);
 				if (user.Id == null)
 				{
-					return new UserDto() {Error = BacksErrorCodes.SignUpError };
+					return new Tuple<BacksErrorCodes, UserDto>(BacksErrorCodes.SignUpError, null);
 				}
 
 				//create session
@@ -71,7 +71,7 @@ namespace Backends.Core.Services
 
 				if (session.Id == null)
 				{
-					return new UserDto() { Error = BacksErrorCodes.SignUpError};
+					return new Tuple<BacksErrorCodes, UserDto>(BacksErrorCodes.SignUpError, null);
 				}
 				//var mappedUser = Mapper.Map<BacksUsers, UserDto>(user);
 				var mappedUser = new UserDto()
@@ -83,7 +83,7 @@ namespace Backends.Core.Services
 
 				//mappedUser.SessionId = session.Id;
 
-				return mappedUser;
+				return new Tuple<BacksErrorCodes, UserDto>(error, mappedUser);
 
 			}
 			catch (Exception e)
@@ -92,19 +92,18 @@ namespace Backends.Core.Services
 				error = BacksErrorCodes.SystemError;
 			}
 
-			return null;
+			return new Tuple<BacksErrorCodes, UserDto>(error, null);
 		}
 
-		public async Task<UserDto> Login(string appId, string userName, string pwd/*, out BacksErrorCodes error*/)
+		public async Task<Tuple<BacksErrorCodes, UserDto>> Login(string appId, string userName, string pwd/*, out BacksErrorCodes error*/)
 		{
 			var error = BacksErrorCodes.Ok;
 			try
 			{
-
 				var user = await _repo.Authenticate(appId, userName, pwd.CreateMD5Hash()).ConfigureAwait(false);
 				if (user.Id == null)
 				{
-					return new UserDto() { Error = BacksErrorCodes.AuthFailed }; ;
+					new Tuple<BacksErrorCodes, UserDto>(BacksErrorCodes.AuthFailed, null);
 				}
 
 				var session = new BacksSessions()
@@ -118,7 +117,8 @@ namespace Backends.Core.Services
 
 				if (session.Id == null)
 				{
-					return new UserDto() { Error = BacksErrorCodes.SignUpError }; 
+					new Tuple<BacksErrorCodes, UserDto>(BacksErrorCodes.SignUpError, null);
+
 				}
 				/*var mappedUser = Mapper.Map<BacksUsers, UserDto>(user);
 				mappedUser.SessionId = session.Id;*/
@@ -131,9 +131,7 @@ namespace Backends.Core.Services
 					Email = user.Email
 				};
 
-
-				return mappedUser;
-
+				return new Tuple<BacksErrorCodes, UserDto>(error, mappedUser);
 
 			}
 			catch (Exception e)
@@ -142,21 +140,23 @@ namespace Backends.Core.Services
 				error = BacksErrorCodes.SystemError;
 			}
 
-			return null;
+			return new Tuple<BacksErrorCodes, UserDto>(error, null);
 		}
 		//KillSession
 
-		public async Task Logout(string appId, string userId, string sessionId/*, out BacksErrorCodes error*/)
+		public async Task<BacksErrorCodes> Logout(string appId, string userId, string sessionId/*, out BacksErrorCodes error*/)
 		{
 			var error = BacksErrorCodes.Ok;
 			try
 			{
 				bool result = await ValidateSession(appId, userId, sessionId);
 
-				if (result)
+				if (!result)
 				{
-					await _repo.RemoveSession(appId, sessionId).ConfigureAwait(false);
+					return BacksErrorCodes.SessionIsNotFound;
 				}
+
+				await _repo.RemoveSession(appId, sessionId).ConfigureAwait(false);
 
 			}
 			catch (Exception e)
@@ -164,9 +164,11 @@ namespace Backends.Core.Services
 				_log.Error("Logout exception : ", e);
 				error = BacksErrorCodes.SystemError;
 			}
+
+			return error;
 		}
 
-		public async Task RemoveUser(string appId, string userId/*, out BacksErrorCodes error*/)
+		public async Task<BacksErrorCodes> RemoveUser(string appId, string userId/*, out BacksErrorCodes error*/)
 		{
 			var error = BacksErrorCodes.Ok;
 			try
@@ -179,6 +181,8 @@ namespace Backends.Core.Services
 				_log.Error("RemoveUser exception : ", e);
 				error = BacksErrorCodes.SystemError;
 			}
+
+			return error;
 		}
 
 		public async Task<bool> ValidateSession(string appId, string userId, string sessionId/*, out BacksErrorCodes error*/)
@@ -197,7 +201,7 @@ namespace Backends.Core.Services
 			return false;
 		}
 
-		public async Task<UserDto> GetUser(string appId, string userId/*, out BacksErrorCodes error*/)
+		public async Task<Tuple<BacksErrorCodes, UserDto>> GetUser(string appId, string userId/*, out BacksErrorCodes error*/)
 		{
 			var error = BacksErrorCodes.Ok;
 			try
@@ -205,22 +209,32 @@ namespace Backends.Core.Services
 				BacksUsers user = await  _repo.GetUser(appId, userId).ConfigureAwait(false);
 				if (user == null)
 				{
-					return new UserDto() { Error = BacksErrorCodes.UserIsNotFound }; 
+					return new Tuple<BacksErrorCodes, UserDto>(BacksErrorCodes.UserIsNotFound, null);
 				}
 
 				var mappedUser = Mapper.Map<BacksUsers, UserDto>(user);
+				/*var mappedUser = new UserDto()
+				{
+					Id = user.Id,
+					UserName = user.UserName,
+					Data =  user.Data,
+					Email = user.Email,
+					CreatedAt = user.CreatedAt.Value,
+					UpdatedAt = user.UpdatedAt.Value
+				};*/
 
-				return mappedUser;
+
+				return new Tuple<BacksErrorCodes, UserDto>(error, mappedUser);
 			}
 			catch (Exception e)
 			{
 				_log.Error("GetUser exception : ", e);
 				error = BacksErrorCodes.SystemError;
 			}
-			return null;
+			return new Tuple<BacksErrorCodes, UserDto>(error, null);
 		}
 
-		public async Task<UserDto> UpdateUser(string appId, string userId, string sessionToken, Dictionary<string, object> customFields/*, out BacksErrorCodes error*/)
+		public async Task<Tuple<BacksErrorCodes, UserDto>> UpdateUser(string appId, string userId, string sessionToken, Dictionary<string, object> customFields/*, out BacksErrorCodes error*/)
 		{
 			var error = BacksErrorCodes.Ok;
 			try
@@ -228,14 +242,14 @@ namespace Backends.Core.Services
 				bool result = await ValidateSession(appId, userId, sessionToken);
 				if (!result)
 				{
-					return new UserDto() {Error = BacksErrorCodes.SessionIsNotFound };
+					return new Tuple<BacksErrorCodes, UserDto>(BacksErrorCodes.SessionIsNotFound, null);
 				}
 
 				//get User and  update
 				BacksUsers user = await _repo.GetUser(appId, userId).ConfigureAwait(false);
 				if (user == null)
 				{
-					return new UserDto() { Error = BacksErrorCodes.UserIsNotFound };
+					return new Tuple<BacksErrorCodes, UserDto>(BacksErrorCodes.UserIsNotFound, null);
 				}
 
 				var updatedData = user.Data;
@@ -246,7 +260,9 @@ namespace Backends.Core.Services
 
 
 				await _repo.UpdateUserData(appId, userId, updatedData).ConfigureAwait(false);
-				return new UserDto() { UpdatedAt = DateTime.UtcNow };
+				var userDto = new UserDto() { UpdatedAt = DateTime.UtcNow };
+
+				return new Tuple<BacksErrorCodes, UserDto>(error, userDto);
 			}
 			catch (Exception e)
 			{
@@ -254,14 +270,14 @@ namespace Backends.Core.Services
 				error = BacksErrorCodes.SystemError;
 			}
 
-			return null;
+			return new Tuple<BacksErrorCodes, UserDto>(error, null);
 		}
 		public void QueryUserData()
 		{
 
 		}
 
-		public async Task PasswrodReset(string appId, string userId, string pwd/*, out BacksErrorCodes error*/)
+		public async Task<BacksErrorCodes> PasswrodReset(string appId, string userId, string pwd/*, out BacksErrorCodes error*/)
 		{
 			var error = BacksErrorCodes.Ok;
 			try
@@ -274,10 +290,10 @@ namespace Backends.Core.Services
 				_log.Error("PasswrodReset exception : ", e);
 				error = BacksErrorCodes.SystemError;
 			}
-
+			return error;
 		}
 
-		public async Task<UserDto> UpdateSession(string appId, string sessionToken, Dictionary<string, object> customFields/*, out BacksErrorCodes error*/)
+		public async Task<Tuple<BacksErrorCodes, SessionDto>> UpdateSession(string appId, string sessionToken, Dictionary<string, object> customFields/*, out BacksErrorCodes error*/)
 		{
 			var error = BacksErrorCodes.Ok;
 			try
@@ -287,7 +303,7 @@ namespace Backends.Core.Services
 				//if (ValidateSession(appId, null, sessionToken, out error))
 				if (session == null)
 				{
-					return new UserDto() { Error = BacksErrorCodes.SessionIsNotFound };
+					return new Tuple<BacksErrorCodes, SessionDto>(BacksErrorCodes.SessionIsNotFound, null);
 				}
 				//Get Session and Update
 
@@ -299,15 +315,19 @@ namespace Backends.Core.Services
 				}
 
 				await _repo.UpdateSession(appId, sessionToken, updatedData).ConfigureAwait(false);
+
+				var sessionDto = new SessionDto() { UpdatedAt = DateTime.UtcNow };
+
+				return new Tuple<BacksErrorCodes, SessionDto>(error, sessionDto);
 			}
 			catch (Exception e)
 			{
 				_log.Error("UpdateUser exception : ", e);
 				error = BacksErrorCodes.SystemError;
 			}
-			return null;
+			return new Tuple<BacksErrorCodes, SessionDto>(error, null);
 		}
-		public async Task RemoveSession(string appId, string sessionId/*, out BacksErrorCodes error*/)
+		public async Task<BacksErrorCodes> RemoveSession(string appId, string sessionId/*, out BacksErrorCodes error*/)
 		{
 			var error = BacksErrorCodes.Ok;
 			try
@@ -320,9 +340,11 @@ namespace Backends.Core.Services
 				_log.Error("RemoveSession exception : ", e);
 				error = BacksErrorCodes.SystemError;
 			}
+
+			return error;
 		}
 
-		public async Task<SessionDto> GetSession(string appId, string sessionId/*, out BacksErrorCodes error*/)
+		public async Task<Tuple<BacksErrorCodes, SessionDto>> GetSession(string appId, string sessionId/*, out BacksErrorCodes error*/)
 		{
 			var error = BacksErrorCodes.Ok;
 			try
@@ -330,7 +352,7 @@ namespace Backends.Core.Services
 				var session = await _repo.GetSession(appId, sessionId).ConfigureAwait(false);
 				if (session == null)
 				{
-					return new SessionDto() { Error = BacksErrorCodes.SessionIsNotFound };
+					return new Tuple<BacksErrorCodes, SessionDto>(BacksErrorCodes.SessionIsNotFound, null);
 				}
 				
 				var sessionDto = new SessionDto()
@@ -342,7 +364,8 @@ namespace Backends.Core.Services
 					Data = session.Data
 				};
 
-				return sessionDto;
+				return new Tuple<BacksErrorCodes, SessionDto>(error, sessionDto);
+
 			}
 			catch (Exception e)
 			{
@@ -350,19 +373,31 @@ namespace Backends.Core.Services
 				error = BacksErrorCodes.SystemError;
 			}
 
-			return null;
+			return new Tuple<BacksErrorCodes, SessionDto>(error, null);
 		}
 
-		public async  Task<List<SessionDto>> GetUserSession(string appId, string userId/*, out BacksErrorCodes error*/)
+		public async  Task<Tuple<BacksErrorCodes, List<SessionDto>>> GetUserSessions(string appId, string sessionId/*, out BacksErrorCodes error*/)
 		{
 			var error = BacksErrorCodes.Ok;
 			try
 			{
-				var sessions = await  _repo.GetAllSessions(appId, userId).ConfigureAwait(false);
+				var session = await _repo.GetSession(appId, sessionId).ConfigureAwait(false);
+				if (session == null)
+				{
+					return new Tuple<BacksErrorCodes, List<SessionDto>> (BacksErrorCodes.SessionIsNotFound, null);
+				}
+
+
+				var user = await _repo.GetUser(appId, session.PUser);
+				if (user == null)
+				{
+					return new Tuple<BacksErrorCodes, List<SessionDto>>(BacksErrorCodes.EntityNotFound, null);
+				}
+
+				var sessions = await _repo.GetAllSessions(appId, user.Id).ConfigureAwait(false);
 				if (sessions == null)
 				{
-					error = BacksErrorCodes.SessionIsNotFound;
-					return null;
+					return new Tuple<BacksErrorCodes, List<SessionDto>> (BacksErrorCodes.SessionIsNotFound, null);
 				}
 
 				var sessionsDto = new List<SessionDto>();
@@ -382,7 +417,7 @@ namespace Backends.Core.Services
 				}
 
 
-				return sessionsDto;
+				return new Tuple<BacksErrorCodes, List<SessionDto>>(error, sessionsDto);
 			}
 			catch (Exception e)
 			{

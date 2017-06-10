@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Backends.Core.Model.BackAdminData
 {
 	[DataContract]
-	public class SessionDto : BaseData
+	public class SessionDto //: BaseData
 	{
 		[DataMember(IsRequired = false, EmitDefaultValue = false)]
 		public string Token { get; set; }
@@ -16,6 +16,10 @@ namespace Backends.Core.Model.BackAdminData
 		public DateTime? CreatedAt { get; set; }
 		[DataMember(IsRequired = false, EmitDefaultValue = false)]
 		public DateTime ExpiresAt { get; set; }
+
+		[DataMember(IsRequired = false, EmitDefaultValue = false)]
+		public DateTime? UpdatedAt { get; set; }
+
 		[DataMember(IsRequired = false, EmitDefaultValue = false)]
 		public string PUser { get; set; }
 

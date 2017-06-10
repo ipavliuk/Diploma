@@ -24,7 +24,7 @@ namespace BackendsServer.Controllers
 		/// <param name="data"></param>
 		/// <returns></returns>
 		[HttpPost]
-		[Route("v1/entities/{entityName}")]
+		[Route("1/entities/{entityName}")]
 		public async Task<HttpResponseMessage> CreateEntity(string entityName, Dictionary<string, object> data)
 		{
 			var response = new ObjectsDto();
@@ -63,7 +63,7 @@ namespace BackendsServer.Controllers
 		/// <param name="entityId"></param>
 		/// <returns></returns>
 		[HttpGet]
-		[Route("v1/entities/{entityName}/{entityId}")]
+		[Route("1/entities/{entityName}/{entityId}")]
 		public async Task<HttpResponseMessage> GetEntity(string entityName, string entityId)
 		{
 			var response = new ObjectsDto();
@@ -101,7 +101,7 @@ namespace BackendsServer.Controllers
 		/// <param name="data">user data JSON object</param>
 		/// <returns></returns>
 		[HttpPut]
-		[Route("v1/entities/{entityName}/{entityId}")]
+		[Route("1/entities/{entityName}/{entityId}")]
 		public async Task<HttpResponseMessage> UpdateEntity(string entityName, string entityId, Dictionary<string, object> data)
 		{
 			var response = new ObjectsDto();
@@ -138,7 +138,7 @@ namespace BackendsServer.Controllers
 		/// <param name="entityName"></param>
 		/// <returns></returns>
 		[HttpGet]
-		[Route("v1/entities/{entityName}")]
+		[Route("1/entities/{entityName}")]
 		public async Task<HttpResponseMessage> GetEntities(string entityName/*, string condition*/)
 		{
 			var response = new List<ObjectsDto>();
@@ -176,7 +176,7 @@ namespace BackendsServer.Controllers
 		/// <param name="entityId"></param>
 		/// <returns></returns>
 		[HttpDelete]
-		[Route("v1/entities/{entityName}/{entityId}")]
+		[Route("1/entities/{entityName}/{entityId}")]
 		public async Task<HttpResponseMessage> DeleteEntity(string entityName, string entityId)
 		{
 			var response = new ObjectsDto();
@@ -210,19 +210,33 @@ namespace BackendsServer.Controllers
 		#endregion
 
 		#region _BUsers
+		/// <summary>
+		/// Create user => SignIn
+		/// </summary>
+		/// <param name="request"></param>
+		/// <returns></returns>
 		[HttpPost]
-		[Route("v1/users")]
+		[Route("1/users")]
 		//create user
-		public async Task<UserDto> SignIn([FromBody] UserSignUpRequest request/*string username, string password, string email*/)
+		public async Task<HttpResponseMessage> SignIn([FromBody] UserSignUpRequest request/*string username, string password, string email*/)
 		{
 			var response = new UserDto();
+			BacksErrorCodes errorCode = BacksErrorCodes.Ok;
 			try
 			{
-				BacksErrorCodes errorCode = ValidateAppCredentialHeaders();
+				errorCode = ValidateAppCredentialHeaders();
 				if (errorCode == BacksErrorCodes.Ok)
 				{
 					var service = BackendsServerManager.Instance.UserService;
-					response = await service.SignUp(AppId, request.email, request.username, request.password);
+					var tuple = await service.SignUp(AppId, request.email, request.username, request.password);
+					if (tuple == null)
+					{
+						errorCode = BacksErrorCodes.SystemError;
+						return FormResponse(errorCode, response);
+					}
+
+					errorCode = tuple.Item1;
+					response = tuple.Item2;
 				}
 
 				//response.ErrorId = (int)errorCode;
@@ -230,104 +244,157 @@ namespace BackendsServer.Controllers
 			}
 			catch (Exception ex)
 			{
+				errorCode = BacksErrorCodes.SystemError;
 				_log.Error("Exception in SignIn", ex);
 			}
-			return response;
+			return FormResponse(errorCode, response);
 		}
 
+		/// <summary>
+		/// User Login into app
+		/// </summary>
+		/// <param name="userName"></param>
+		/// <param name="pwd"></param>
+		/// <returns></returns>
 		[HttpGet]
-		[Route("v1/login")]
-		public async Task<UserDto> Login(string userName, string pwd)
+		[Route("1/login")]
+		public async Task<HttpResponseMessage> Login(string userName, string pwd)
 		{
 			var response = new UserDto();
+			BacksErrorCodes errorCode = BacksErrorCodes.Ok;
 			try
 			{
-				BacksErrorCodes errorCode = ValidateAppCredentialHeaders();
+				errorCode = ValidateAppCredentialHeaders();
 				if (errorCode == BacksErrorCodes.Ok)
 				{
 					var service = BackendsServerManager.Instance.UserService;
-					response = await service.Login(AppId, userName, pwd);
+					var tuple = await service.Login(AppId, userName, pwd);
+					if (tuple == null)
+					{
+						errorCode = BacksErrorCodes.SystemError;
+						return FormResponse(errorCode, response);
+					}
+
+					errorCode = tuple.Item1;
+					response = tuple.Item2;
 				}
-
-				//response.ErrorId = (int)errorCode;
-
+				
 			}
 			catch (Exception ex)
 			{
+				errorCode = BacksErrorCodes.SystemError;
 				_log.Error("Exception in Login", ex);
 			}
-			return response;
+			return FormResponse(errorCode, response);
 		}
+		/// <summary>
+		/// Logout user from app
+		/// </summary>
+		/// <param name="userName"></param>
+		/// <param name="pwd"></param>
+		/// <returns></returns>
 		[HttpPost]
-		[Route("v1/logout")]
-		public BaseRespones Logout(string userName, string pwd)
+		[Route("1/logout")]
+		public async Task<HttpResponseMessage> Logout()
 		{
-			var response = new BaseRespones();
+			BacksErrorCodes errorCode = BacksErrorCodes.Ok;
 			try
 			{
-				BacksErrorCodes errorCode = ValidateAppCredentialHeaders();
+				errorCode = ValidateAppCredentialHeaders();
 				if (errorCode == BacksErrorCodes.Ok)
 				{
-
+					var service = BackendsServerManager.Instance.UserService;
+					errorCode = await service.Logout(AppId, null, SessionToken);
 				}
-
-				response.ErrorId = (int)errorCode;
 
 			}
 			catch (Exception ex)
 			{
+				errorCode = BacksErrorCodes.SystemError;
 				_log.Error("Exception in Logout", ex);
 			}
-			return response;
+			return FormResponse(errorCode);
 		}
 
+		/// <summary>
+		/// Get user By Id
+		/// </summary>
+		/// <param name="entityName"></param>
+		/// <param name="entityId"></param>
+		/// <returns></returns>
 		[HttpGet]
-		[Route("v1/users/{userId}")]
-		public BaseRespones GetUser(string entityName, string entityId)
+		[Route("1/users/{userId}")]
+		public async Task<HttpResponseMessage> GetUser(string userId)
 		{
-			var response = new BaseRespones();
+			var response = new UserDto();
+			BacksErrorCodes errorCode = BacksErrorCodes.Ok;
 			try
 			{
-				BacksErrorCodes errorCode = ValidateAppCredentialHeaders();
+				errorCode = ValidateAppCredentialHeaders();
 				if (errorCode == BacksErrorCodes.Ok)
 				{
+					var service = BackendsServerManager.Instance.UserService;
 
+					var tuple = await service.GetUser(AppId, userId);
+					if (tuple == null)
+					{
+						errorCode = BacksErrorCodes.SystemError;
+						return FormResponse(errorCode, response);
+					}
+
+					errorCode = tuple.Item1;
+					response = tuple.Item2;
 				}
-
-				response.ErrorId = (int)errorCode;
 
 			}
 			catch (Exception ex)
 			{
+				errorCode = BacksErrorCodes.SystemError;
 				_log.Error("Exception in GetUser", ex);
 			}
-			return response;
+			return FormResponse(errorCode, response);
 		}
+
+		/// <summary>
+		/// Update user data
+		/// </summary>
+		/// <param name="entityName"></param>
+		/// <param name="entityId"></param>
+		/// <returns></returns>
 		[HttpPut]
-		[Route("v1/users/{userId}")]
-		public BaseRespones UpdateUser(string entityName, string entityId)
+		[Route("1/users/{userId}")]
+		public async Task<HttpResponseMessage> UpdateUser(string userId, Dictionary<string, object> data)
 		{
-			var response = new BaseRespones();
+			var response = new UserDto();
+			BacksErrorCodes errorCode = BacksErrorCodes.Ok;
 			try
 			{
-				BacksErrorCodes errorCode = ValidateAppCredentialHeaders();
+				errorCode = ValidateAppCredentialHeaders();
 				if (errorCode == BacksErrorCodes.Ok)
 				{
+					var service = BackendsServerManager.Instance.UserService;
 
+					var tuple = await service.UpdateUser(AppId, userId, SessionToken, data);
+					if (tuple == null)
+					{
+						errorCode = BacksErrorCodes.SystemError;
+						return FormResponse(errorCode, response);
+					}
+
+					errorCode = tuple.Item1;
+					response = tuple.Item2;
 				}
-
-				response.ErrorId = (int)errorCode;
-
 			}
 			catch (Exception ex)
 			{
+				errorCode = BacksErrorCodes.SystemError;
 				_log.Error("Exception in UpdateUser", ex);
 			}
-			return response;
+			return FormResponse(errorCode, response);
 		}
 
 		//[HttpGet]
-		//[Route("v1/users")]
+		//[Route("1/users")]
 		//public BaseRespones GetUsers()
 		//{
 		//	var response = new BaseRespones();
@@ -349,121 +416,198 @@ namespace BackendsServer.Controllers
 		//	return response;
 		//}
 
+		/// <summary>
+		/// Remove user by Id
+		/// </summary>
+		/// <returns></returns>
 		[HttpDelete]
-		[Route("v1/users/{userId}")]
-		public BaseRespones DeleteUser()
+		[Route("1/users/{userId}")]
+		public async Task<HttpResponseMessage> DeleteUser(string userId)
 		{
-			var response = new BaseRespones();
+			BacksErrorCodes errorCode = BacksErrorCodes.Ok;
 			try
 			{
-				BacksErrorCodes errorCode = ValidateAppCredentialHeaders();
+				errorCode = ValidateAppCredentialHeaders();
 				if (errorCode == BacksErrorCodes.Ok)
 				{
-
+					var service = BackendsServerManager.Instance.UserService;
+					errorCode = await service.RemoveUser(AppId, userId);
 				}
-
-				response.ErrorId = (int)errorCode;
+				
+			}
+			catch (Exception ex)
+			{
+				errorCode = BacksErrorCodes.SystemError;
+				_log.Error("Exception in DeleteEntity", ex);
+			}
+			return FormResponse(errorCode);
+		}
+		/// <summary>
+		/// Reset userPassword
+		/// </summary>
+		/// <param name="userId"></param>
+		/// <param name="newPwd"></param>
+		/// <returns></returns>
+		[HttpPost]
+		[Route("1/requestPasswordReset")]
+		public async Task<HttpResponseMessage> PasswordReset(string userId, string password)
+		{
+			BacksErrorCodes errorCode = BacksErrorCodes.Ok;
+			try
+			{
+				errorCode = ValidateAppCredentialHeaders();
+				if (errorCode == BacksErrorCodes.Ok)
+				{
+					var service = BackendsServerManager.Instance.UserService;
+					errorCode = await service.PasswrodReset(AppId, userId, password);
+				}
 
 			}
 			catch (Exception ex)
 			{
-				_log.Error("Exception in DeleteEntity", ex);
+				errorCode = BacksErrorCodes.SystemError;
+				_log.Error("Exception in Logout", ex);
 			}
-			return response;
+			return FormResponse(errorCode);
 		}
 		#endregion
 
 		#region _bSession
+		/// <summary>
+		/// Get session by Id
+		/// </summary>
+		/// <param name="sessionId"></param>
+		/// <returns></returns>
 		[HttpGet]
-		[Route("v1/sessions/{sessionId}")]
-		public BaseRespones GetSession(string sessionId)
+		[Route("1/sessions/{sessionId}")]
+		public async Task<HttpResponseMessage> GetSession(string sessionId)
 		{
-			var response = new BaseRespones();
+			var response = new SessionDto();
+			BacksErrorCodes errorCode = BacksErrorCodes.Ok;
 			try
 			{
-				BacksErrorCodes errorCode = ValidateAppCredentialHeaders();
+				errorCode = ValidateAppCredentialHeaders();
 				if (errorCode == BacksErrorCodes.Ok)
 				{
+					var service = BackendsServerManager.Instance.UserService;
+					var tuple = await service.GetSession(AppId, sessionId);
+					if (tuple == null)
+					{
+						errorCode = BacksErrorCodes.SystemError;
+						return FormResponse(errorCode, response);
+					}
 
+					errorCode = tuple.Item1;
+					response = tuple.Item2;
 				}
 
-				response.ErrorId = (int)errorCode;
 
 			}
 			catch (Exception ex)
 			{
+				errorCode = BacksErrorCodes.SystemError;
 				_log.Error("Exception in GetSession", ex);
 			}
-			return response;
+			return FormResponse(errorCode, response);
 		}
-
+		/// <summary>
+		/// Update user session
+		/// </summary>
+		/// <param name="sessionId"></param>
+		/// <param name="data"></param>
+		/// <returns></returns>
 		[HttpPut]
-		[Route("v1/sessions/{sessionId}")]
-		public BaseRespones UpdateSession(string sessionId)
+		[Route("1/sessions/{sessionId}")]
+		public async Task<HttpResponseMessage> UpdateSession(string sessionId, Dictionary<string, object> data)
 		{
-			var response = new BaseRespones();
+			var response = new SessionDto();
+			BacksErrorCodes errorCode = BacksErrorCodes.Ok;
 			try
 			{
-				BacksErrorCodes errorCode = ValidateAppCredentialHeaders();
+				errorCode = ValidateAppCredentialHeaders();
 				if (errorCode == BacksErrorCodes.Ok)
 				{
+					var service = BackendsServerManager.Instance.UserService;
+					var tuple = await service.UpdateSession(AppId, sessionId, data);
+					if (tuple == null)
+					{
+						errorCode = BacksErrorCodes.SystemError;
+						return FormResponse(errorCode, response);
+					}
 
+					errorCode = tuple.Item1;
+					response = tuple.Item2;
 				}
-
-				response.ErrorId = (int)errorCode;
 
 			}
 			catch (Exception ex)
 			{
+				errorCode = BacksErrorCodes.SystemError;
 				_log.Error("Exception in UpdateSession", ex);
 			}
-			return response;
+			return FormResponse(errorCode, response);
 		}
-
+		/// <summary>
+		/// Get all user sessions
+		/// </summary>
+		/// <returns></returns>
 		[HttpGet]
-		[Route("v1/sessions")]
-		public BaseRespones GetSessions()
+		[Route("1/sessions")]
+		public async Task<HttpResponseMessage> GetSessions()
 		{
-			var response = new BaseRespones();
+			var response = new List<SessionDto>();
+			BacksErrorCodes errorCode = BacksErrorCodes.Ok;
 			try
 			{
-				BacksErrorCodes errorCode = ValidateAppCredentialHeaders();
+				errorCode = ValidateAppCredentialHeaders();
 				if (errorCode == BacksErrorCodes.Ok)
 				{
+					var service = BackendsServerManager.Instance.UserService;
+					var tuple = await service.GetUserSessions(AppId, SessionToken);
+					if (tuple == null)
+					{
+						errorCode = BacksErrorCodes.SystemError;
+						return FormResponse(errorCode, response);
+					}
 
+					errorCode = tuple.Item1;
+					response = tuple.Item2;
 				}
-
-				response.ErrorId = (int)errorCode;
-
 			}
 			catch (Exception ex)
 			{
+				errorCode = BacksErrorCodes.SystemError;
 				_log.Error("Exception in GetSessions", ex);
 			}
-			return response;
+			return FormResponse(errorCode, response);
 		}
-
+		/// <summary>
+		/// Delete user session
+		/// </summary>
+		/// <param name="sessionId"></param>
+		/// <returns></returns>
 		[HttpDelete]
-		[Route("v1/sessions/{sessionId}")]
-		public BaseRespones DeleteSession(string sessionId)
+		[Route("1/sessions/{sessionId}")]
+		public async Task<HttpResponseMessage> DeleteSession(string sessionId)
 		{
 			var response = new BaseRespones();
+			BacksErrorCodes errorCode = BacksErrorCodes.Ok;
 			try
 			{
-				BacksErrorCodes errorCode = ValidateAppCredentialHeaders();
+				errorCode = ValidateAppCredentialHeaders();
 				if (errorCode == BacksErrorCodes.Ok)
 				{
-
+					var service = BackendsServerManager.Instance.UserService;
+					errorCode = await service.RemoveSession(AppId, SessionToken);
+					
 				}
-
-				response.ErrorId = (int)errorCode;
-
 			}
 			catch (Exception ex)
 			{
+				errorCode = BacksErrorCodes.SystemError;
 				_log.Error("Exception in DeleteEntity", ex);
 			}
-			return response;
+			return FormResponse(errorCode, response);
 		}
         #endregion
 
