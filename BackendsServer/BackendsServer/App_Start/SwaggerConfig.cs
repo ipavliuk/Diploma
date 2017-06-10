@@ -35,6 +35,7 @@ namespace BackendsServer
                         //
                         c.SingleApiVersion("v1", "BackendsServer");
 						c.OperationFilter<AddAuthorizationHeader>();
+							
 
 						// If your API has multiple versions, use "MultipleApiVersions" instead of "SingleApiVersion".
 						// In this case, you must provide a lambda that tells Swashbuckle which actions should be
@@ -99,7 +100,7 @@ namespace BackendsServer
 						// those comments into the generated docs and UI. You can enable this by providing the path to one or
 						// more Xml comment files.
 						//
-						//c.IncludeXmlComments(GetXmlCommentsPath());
+						c.IncludeXmlComments(string.Format(@"{0}\bin\BackendsServer.XML", System.AppDomain.CurrentDomain.BaseDirectory));
 
 						// Swashbuckle makes a best attempt at generating Swagger compliant JSON schemas for the various types
 						// exposed in your API. However, there may be occasions when more control of the output is needed.

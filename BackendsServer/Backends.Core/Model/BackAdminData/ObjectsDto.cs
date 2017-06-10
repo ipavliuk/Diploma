@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 namespace Backends.Core.Model.BackAdminData
 {
 	[DataContract]
-	public class ObjectsDto: BaseData
+	public class ObjectsDto//: BaseData
 	{
 		[DataMember(IsRequired = false, EmitDefaultValue = false)]
 		public string Id { get; set; }

@@ -17,74 +17,126 @@ namespace BackendsServer.Controllers
 
 
 		#region _BObjects
+		/// <summary>
+		/// Create new entity
+		/// </summary>
+		/// <param name="entityName"></param>
+		/// <param name="data"></param>
+		/// <returns></returns>
 		[HttpPost]
 		[Route("v1/entities/{entityName}")]
-		public async Task<ObjectsDto> CreateEntity(string entityName, Dictionary<string, object> data)
+		public async Task<HttpResponseMessage> CreateEntity(string entityName, Dictionary<string, object> data)
 		{
 			var response = new ObjectsDto();
+			BacksErrorCodes errorCode = BacksErrorCodes.Ok;
+			
 			try
 			{
-				BacksErrorCodes errorCode = ValidateAppCredentialHeaders();
-				if(errorCode == BacksErrorCodes.Ok)
+				errorCode = ValidateAppCredentialHeaders();
+				if (errorCode == BacksErrorCodes.Ok)
 				{
 					var service = BackendsServerManager.Instance.DataService;
-					 response = await service.CreateEntity(AppId, entityName, data);
+					var tuple  = await service.CreateEntity(AppId, entityName, data);
+
+					if (tuple == null)
+					{
+						errorCode = BacksErrorCodes.SystemError;
+						return FormResponse(errorCode, response);
+					}
+
+					errorCode = tuple.Item1;
+					response = tuple.Item2;
 				}
-				//response.ErrorId = (int)errorCode;
 			}
 			catch (Exception ex)
 			{
+				errorCode = BacksErrorCodes.SystemError;
 				_log.Error("Exception in CreateEntity", ex);
 			}
-			return response;
+			return FormResponse(errorCode, response);
 		}
 
+		/// <summary>
+		/// Get entity by Id
+		/// </summary>
+		/// <param name="entityName"></param>
+		/// <param name="entityId"></param>
+		/// <returns></returns>
 		[HttpGet]
 		[Route("v1/entities/{entityName}/{entityId}")]
-		public async Task<ObjectsDto> GetEntity(string entityName, string entityId)
+		public async Task<HttpResponseMessage> GetEntity(string entityName, string entityId)
 		{
 			var response = new ObjectsDto();
+			BacksErrorCodes errorCode = BacksErrorCodes.Ok;
 			try
 			{
-				BacksErrorCodes errorCode = ValidateAppCredentialHeaders();
+				errorCode = ValidateAppCredentialHeaders();
 				if (errorCode == BacksErrorCodes.Ok)
 				{
 					var service = BackendsServerManager.Instance.DataService;
-					response = await service.GetEntity(AppId, entityName, entityId);
+					var tuple = await service.GetEntity(AppId, entityName, entityId);
+					
+					if (tuple == null)
+					{
+						errorCode = BacksErrorCodes.SystemError;
+						return FormResponse(errorCode, response);
+					}
+
+					errorCode = tuple.Item1;
+					response = tuple.Item2;
 				}
-
-				//response.Error = string.IsNullOrEmpty(response.Id)? BacksErrorCodes.SystemError : BacksErrorCodes.Ok ;
-
 			}
 			catch (Exception ex)
 			{
+				errorCode = BacksErrorCodes.SystemError;
 				_log.Error("Exception in GetEntity", ex);
 			}
-			return response;
+			return FormResponse(errorCode, response); ;
 		}
-
+		/// <summary>
+		/// Update entity
+		/// </summary>
+		/// <param name="entityName"></param>
+		/// <param name="entityId"></param>
+		/// <param name="data">user data JSON object</param>
+		/// <returns></returns>
 		[HttpPut]
 		[Route("v1/entities/{entityName}/{entityId}")]
-		public async Task<ObjectsDto> UpdateEntity(string entityName, string entityId, Dictionary<string, object> data)
+		public async Task<HttpResponseMessage> UpdateEntity(string entityName, string entityId, Dictionary<string, object> data)
 		{
 			var response = new ObjectsDto();
+			BacksErrorCodes errorCode = BacksErrorCodes.Ok;
 			try
 			{
-				BacksErrorCodes errorCode = ValidateAppCredentialHeaders();
+				errorCode = ValidateAppCredentialHeaders();
 				if (errorCode == BacksErrorCodes.Ok)
 				{
 					var service = BackendsServerManager.Instance.DataService;
-					response = await service.UpdateEntity(AppId, entityName, entityId, data);
+					var tuple = await service.UpdateEntity(AppId, entityName, entityId, data);
+					if (tuple == null)
+					{
+						errorCode = BacksErrorCodes.SystemError;
+						return FormResponse(errorCode, response);
+					}
+
+					errorCode = tuple.Item1;
+					response = tuple.Item2;
 				}
 
 			}
 			catch (Exception ex)
 			{
+				errorCode = BacksErrorCodes.SystemError;
 				_log.Error("Exception in UpdateEntity", ex);
 			}
-			return response;
-		}
 
+			return FormResponse(errorCode, response);
+		}
+		/// <summary>
+		/// Get entities by entityName/filter
+		/// </summary>
+		/// <param name="entityName"></param>
+		/// <returns></returns>
 		[HttpGet]
 		[Route("v1/entities/{entityName}")]
 		public async Task<HttpResponseMessage> GetEntities(string entityName/*, string condition*/)
@@ -108,41 +160,53 @@ namespace BackendsServer.Controllers
 					errorCode = tuple.Item1;
 					response = tuple.Item2;
 				}
-
-				//response.ErrorId = (int)errorCode;
-
 			}
 			catch (Exception ex)
 			{
+				errorCode = BacksErrorCodes.SystemError;
 				_log.Error("Exception in GetEntities", ex);
 			}
 
 			return FormResponse(errorCode, response);
 		}
-
+		/// <summary>
+		/// Delete entity
+		/// </summary>
+		/// <param name="entityName"></param>
+		/// <param name="entityId"></param>
+		/// <returns></returns>
 		[HttpDelete]
 		[Route("v1/entities/{entityName}/{entityId}")]
-		public async Task<ObjectsDto> DeleteEntity(string entityName, string entityId)
+		public async Task<HttpResponseMessage> DeleteEntity(string entityName, string entityId)
 		{
 			var response = new ObjectsDto();
+			BacksErrorCodes errorCode = BacksErrorCodes.Ok;
 			try
 			{
-				BacksErrorCodes errorCode = ValidateAppCredentialHeaders();
+				errorCode = ValidateAppCredentialHeaders();
 				if (errorCode == BacksErrorCodes.Ok)
 				{
 					var service = BackendsServerManager.Instance.DataService;
-					response = await service.RemoveEntity(AppId, entityName, entityId);
+					var tuple  = await service.RemoveEntity(AppId, entityName, entityId);
+					if (tuple == null)
+					{
+						errorCode = BacksErrorCodes.SystemError;
+						return FormResponse(errorCode, response);
+					}
+
+					errorCode = tuple.Item1;
+					response = tuple.Item2;
 				}
-
-				//response.ErrorId = (int)errorCode;
-
+				
 			}
 			catch (Exception ex)
 			{
+				errorCode = BacksErrorCodes.SystemError;
 				_log.Error("Exception in DeleteEntity", ex);
 			}
-			return response;
+			return FormResponse(errorCode, response);
 		}
+	
 		#endregion
 
 		#region _BUsers

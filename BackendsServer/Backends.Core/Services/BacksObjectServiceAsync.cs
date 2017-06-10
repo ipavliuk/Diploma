@@ -28,13 +28,12 @@ namespace Backends.Core.Services
 			});
 		}
 
-		public async Task<ObjectsDto> CreateEntity(string appId, string name, Dictionary<string, object> data/*, out BacksErrorCodes error*/)
+		public async Task<Tuple<BacksErrorCodes, ObjectsDto>> CreateEntity(string appId, string name, Dictionary<string, object> data/*, out BacksErrorCodes error*/)
 		{
 			var error = BacksErrorCodes.Ok;
 			var obj = new ObjectsDto();
 			try
 			{
-
 				var entity = new BacksObject()
 				{
 					AppId = appId,
@@ -47,13 +46,13 @@ namespace Backends.Core.Services
 
 				if (entity.Id == null)
 				{
-					obj.Error = BacksErrorCodes.SystemError;
-					return obj;
+					error = BacksErrorCodes.SystemError;
+					return new Tuple<BacksErrorCodes, ObjectsDto>(error, null);
 				}
 
-				return new ObjectsDto()
+				obj = new ObjectsDto()
 				{
-					Error = BacksErrorCodes.Ok,
+					
 					Id = entity.Id,
 					CreatedAt = entity.CreatedAt.Value
 				};
@@ -64,45 +63,50 @@ namespace Backends.Core.Services
 				error = BacksErrorCodes.SystemError;
 			}
 
-			return null;
+			return new Tuple<BacksErrorCodes, ObjectsDto>(error, obj);
 		}
 
-		public async Task<ObjectsDto> GetEntity(string appId, string name, string entityId/*, out BacksErrorCodes error*/)
+		public async Task<Tuple<BacksErrorCodes, ObjectsDto>> GetEntity(string appId, string name, string entityId/*, out BacksErrorCodes error*/)
 		{
 			var error = BacksErrorCodes.Ok;
+			var obj = new ObjectsDto();
 			try
 			{
 				BacksObject entity = await _repo.GetEntity(appId, name, entityId).ConfigureAwait(false);
 				if (entity == null)
 				{
-					return new ObjectsDto() { Error = BacksErrorCodes.EntityNotFound }; ;
+					error = BacksErrorCodes.EntityNotFound;
+					return new Tuple<BacksErrorCodes, ObjectsDto>(error, null);
 				}
 
-				var mappedEntity = Mapper.Map<BacksObject, ObjectsDto>(entity);
-
-				return mappedEntity;
-
+				obj = new ObjectsDto()
+				{
+					Id = entity.Id,
+					Name = entity.Name,
+					Data = entity.Data,
+					CreatedAt = entity.CreatedAt,
+					UpdatedAt = entity.UpdatedAt
+				}; //Mapper.Map<BacksObject, ObjectsDto>(entity);
 			}
 			catch (Exception e)
 			{
 				_log.Error("GetEntity exception : ", e);
 				error = BacksErrorCodes.SystemError;
 			}
-			return null;
+			return new Tuple<BacksErrorCodes, ObjectsDto>(error, obj);
 		}
 
-		public async Task<ObjectsDto> UpdateEntity(string appId, string entityName, string entityId,
+		public async Task<Tuple<BacksErrorCodes, ObjectsDto>> UpdateEntity(string appId, string entityName, string entityId,
 					Dictionary<string, object> data/*, out BacksErrorCodes error*/)
 		{
 			var error = BacksErrorCodes.Ok;
 			try
 			{
-
 				BacksObject entity = await _repo.GetEntity(appId, entityName, entityId).ConfigureAwait(false);
 				if (entity == null)
 				{
 					error = BacksErrorCodes.EntityNotFound;
-					return null;
+					return new Tuple<BacksErrorCodes, ObjectsDto>(error, null);
 				}
 
 				var updatedData = entity.Data;
@@ -112,15 +116,14 @@ namespace Backends.Core.Services
 				}
 
 				await _repo.UpdateEntity(appId, entityName, entityId, updatedData).ConfigureAwait(false);
-
-				return new ObjectsDto() { UpdatedAt = DateTime.UtcNow };
+				
 			}
 			catch (Exception e)
 			{
 				_log.Error("UpdateEntity exception : ", e);
 				error = BacksErrorCodes.SystemError;
 			}
-			return null;
+			return new Tuple<BacksErrorCodes, ObjectsDto>(error, new ObjectsDto() { UpdatedAt = DateTime.UtcNow });
 		}
 
 		public async Task<Tuple<BacksErrorCodes, List<ObjectsDto>>> QueryEntity(string appId, string entityId)
@@ -175,20 +178,20 @@ namespace Backends.Core.Services
 		}
 
 
-		public async Task<ObjectsDto> RemoveEntity(string appId, string entityName, string entityId/*, out BacksErrorCodes error*/)
+		public async Task<Tuple<BacksErrorCodes, ObjectsDto>> RemoveEntity(string appId, string entityName, string entityId/*, out BacksErrorCodes error*/)
 		{
 			var error = BacksErrorCodes.Ok;
 			try
 			{
-				await  _repo.RemoveEntity(appId, entityName, entityId).ConfigureAwait(false);
-				return new ObjectsDto() { UpdatedAt = DateTime.UtcNow };
+				await _repo.RemoveEntity(appId, entityName, entityId).ConfigureAwait(false);
+				return new Tuple<BacksErrorCodes, ObjectsDto>(error, new ObjectsDto() { UpdatedAt = DateTime.UtcNow });
 			}
 			catch (Exception e)
 			{
 				_log.Error("RemoveEntity exception : ", e);
 				error = BacksErrorCodes.SystemError;
 			}
-			return null;
+			return new Tuple<BacksErrorCodes, ObjectsDto>(error, null);
 		}
 	}
 
