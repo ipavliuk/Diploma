@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using MongoDB.Bson.Serialization.Options;
 
 namespace BackendsCommon.Types
 {
@@ -33,6 +34,8 @@ namespace BackendsCommon.Types
 		}
 
 		private Dictionary<string, object> data = new Dictionary<string, object>();
+		//[BsonExtraElements]
+		[BsonDictionaryOptions(DictionaryRepresentation.ArrayOfArrays)]
 		public Dictionary<string, object> Data
 		{
 			get { return data; }

@@ -148,6 +148,7 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
+    <Compile Include="Controllers\DashboardController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\SessionBags.cs" />
     <Compile Include="Global.asax.cs">
@@ -200,6 +201,8 @@
     <Content Include="Views\Home\AddProject.cshtml" />
     <Content Include="Views\Home\AddProjectResult.cshtml" />
     <Content Include="Views\Home\GetAllProjects.cshtml" />
+    <Content Include="Views\Dashboard\DashboardView.cshtml" />
+    <Content Include="Views\Dashboard\Index.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

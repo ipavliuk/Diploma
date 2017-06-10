@@ -13,7 +13,7 @@ namespace BackendsDashboard.Controllers
 {
 	public class HomeController : Controller
 	{
-	
+
 		public ActionResult Index()
 		{
 			return View();
@@ -39,6 +39,7 @@ namespace BackendsDashboard.Controllers
 			ViewBag.IsAuthenticated = false;
 			return View();
 		}
+
 		[HttpPost]
 		[AllowAnonymous]
 		[ValidateAntiForgeryToken]
@@ -52,19 +53,19 @@ namespace BackendsDashboard.Controllers
 				var accountDto = await service.SignIn(model.FirstName, model.LastName, model.Email, model.ScreenName, model.Password);
 
 				string result = "";
-				
-				
+
+
 				if (accountDto != null)
 				{
 					switch (accountDto.Error)
 					{
 						case BacksErrorCodes.Ok:
 							SessionBag.Current.account = accountDto;
-							SessionBag.Current.AccountName = accountDto.FirstName + " " +accountDto.LastName;
+							SessionBag.Current.AccountName = accountDto.FirstName + " " + accountDto.LastName;
 							SessionBag.Current.AccountId = accountDto.Id;
 
 
-								return RedirectToAction("Index", "Home");
+							return RedirectToAction("Index", "Home");
 						case BacksErrorCodes.DuplicateLogin:
 							result = "Даний логін вже присутній в системі";
 							break;
@@ -74,11 +75,11 @@ namespace BackendsDashboard.Controllers
 							return View(model);
 					}
 					// For more information on how to enable account confirmation and password reset please visit http://go.microsoft.com/fwlink/?LinkID=320771
-						// Send an email with this link
-						// string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-						// var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-						// await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
-					
+					// Send an email with this link
+					// string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
+					// var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
+					// await UserManager.SendEmailAsync(user.Id, "Confirm your account", "Please confirm your account by clicking <a href=\"" + callbackUrl + "\">here</a>");
+
 				}
 
 				AddErrors(result);
@@ -124,9 +125,9 @@ namespace BackendsDashboard.Controllers
 				ModelState.AddModelError("", "Invalid login attempt.");
 				return View(model);
 			}
-			
+
 		}
-		
+
 		public ActionResult AddProject()
 		{
 			return View();
@@ -139,7 +140,7 @@ namespace BackendsDashboard.Controllers
 			{
 				var service = BackendsServerManager.Instance.AdminService;
 				ProjectDto accountDto = await service.AddNewProject(model.Name, SessionBag.Current.AccountId);
-			
+
 				if (accountDto != null)
 				{
 					var modelNewProject = new NewProjectViewModel()
@@ -191,10 +192,10 @@ namespace BackendsDashboard.Controllers
 					//return RedirectToAction("Index", "Home");
 				}
 			}
-			
-			
 
-			
+
+
+
 
 			return View();
 		}
@@ -207,7 +208,14 @@ namespace BackendsDashboard.Controllers
 			return RedirectToAction("Index", "Home");
 		}
 
-		public static bool IsValid()
+
+		public ActionResult Details(string projId)
+		{
+
+			return RedirectToAction("Index", "Dashboard");
+		}	
+
+	public static bool IsValid()
 		{
 			return SessionBag.Current.account != null;
 		} 
