@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Web;
+using BackendsCommon.Types.BacksModel;
 
 namespace BackendsDashboard.Models
 {
@@ -83,6 +84,10 @@ namespace BackendsDashboard.Models
 
 		public string MasterKeyAccess { get; set; }
 
+		public int EntitiesCount { get; set; }
+
+		public long UserLogedIn { get; set; }
+
 		//public string Settings { get; set; }
 
 		//public long UserCount { get; set; }
@@ -91,7 +96,7 @@ namespace BackendsDashboard.Models
 
 		public DateTime CreatedAt { get; set; }
 
-		//public BacksProjectSchema Schema { get; set; }
+		public BacksProjectSchema Schema { get; set; }
 	}
 
 	public class AccountProjectsViewModel

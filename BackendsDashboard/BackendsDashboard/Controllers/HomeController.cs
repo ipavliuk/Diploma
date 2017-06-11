@@ -182,7 +182,9 @@ namespace BackendsDashboard.Controllers
 							AppId = item.AppId,
 							ApiKeyAccess = item.ApiKeyAccess,
 							MasterKeyAccess = item.MasterKeyAccess,
-							CreatedAt = item.CreatedAt
+							CreatedAt = item.CreatedAt,
+							EntitiesCount = item.Schema.EntityColumnTypeMapping.Count,
+							UserLogedIn = item.UserCount
 						};
 
 						projectsModel.Projects.Add(modelNewProject);
@@ -192,11 +194,7 @@ namespace BackendsDashboard.Controllers
 					//return RedirectToAction("Index", "Home");
 				}
 			}
-
-
-
-
-
+			
 			return View();
 		}
 

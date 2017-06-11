@@ -160,16 +160,22 @@
   <ItemGroup>
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
+    <Content Include="Content\dashboard.css" />
+    <Content Include="Content\ie10-viewport-bug-workaround.css" />
     <Content Include="favicon.ico" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
+    <Content Include="img\blank-app-outline.svg" />
+    <Content Include="img\core.svg" />
     <Content Include="Scripts\bootstrap.js" />
     <Content Include="Scripts\bootstrap.min.js" />
     <Content Include="ApplicationInsights.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
+    <Content Include="Scripts\holder.min.js" />
+    <Content Include="Scripts\ie-emulation-modes-warning.js" />
     <Content Include="Scripts\jquery-1.10.2.js" />
     <Content Include="Scripts\jquery-1.10.2.min.js" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
@@ -201,8 +207,11 @@
     <Content Include="Views\Home\AddProject.cshtml" />
     <Content Include="Views\Home\AddProjectResult.cshtml" />
     <Content Include="Views\Home\GetAllProjects.cshtml" />
-    <Content Include="Views\Dashboard\DashboardView.cshtml" />
     <Content Include="Views\Dashboard\Index.cshtml" />
+    <Content Include="Views\Home\DasgboardView.cshtml" />
+    <Content Include="Views\Shared\_Footer.cshtml" />
+    <Content Include="Views\Shared\_Sidebar.cshtml" />
+    <Content Include="Views\Shared\_Layout_2.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
@@ -216,6 +225,10 @@
     <Content Include="Scripts\jquery-1.10.2.min.map" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\BackendsCommon\BackendsCommon.Types\BackendsCommon.Types.csproj">
+      <Project>{B13C16E5-B3D1-4A07-9089-C5FE08F7FA2C}</Project>
+      <Name>BackendsCommon.Types</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\BackendsServer\Backends.Core\Backends.Core.csproj">
       <Project>{1ee55d87-efc6-4ef0-85d3-349013c353bf}</Project>
       <Name>Backends.Core</Name>

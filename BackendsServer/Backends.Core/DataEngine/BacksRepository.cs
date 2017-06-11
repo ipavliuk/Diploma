@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using BackendsCommon.Logging;
+using BackendsCommon.Types;
 using BackendsCommon.Types.BacksModel;
 using MongoDB.Bson;
 
@@ -213,7 +214,28 @@ namespace Backends.Core.DataEngine
 				_log.Error("Exception in GetSchema", e);
 				throw;
 			}
-}
+		}
+
+		public async Task Update_Schema(string appId, Dictionary<string, EntitiesSchema> data)
+		{
+			try
+			{
+				var filter = Builders<BacksProjectSchema>.Filter.Eq(s => s.AppId, appId);
+
+				var update = Builders<BacksProjectSchema>.Update.Set(s => s.EntityColumnTypeMapping, data);
+					//.CurrentDate(s => s.UpdatedAt);
+
+
+				await _context._Schema.UpdateOneAsync(filter, update);
+				
+			}
+			catch (Exception e)
+			{
+				_log.Error("Exception in GetSchema", e);
+				throw;
+			}
+		}
+
 		public void CreateCollection(string name, BsonDocument validator)
 		{
 			try

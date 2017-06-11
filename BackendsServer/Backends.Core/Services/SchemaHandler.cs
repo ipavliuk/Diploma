@@ -71,6 +71,43 @@ namespace Backends.Core.Services
             };
         }
 
+	    //public Dictionary<string, string> GetSchema(Dictionary<string, object> data)
+		public EntitiesSchema GetSchema(Dictionary<string, object> data)
+	    {
+		    var columnTypeMapping = new EntitiesSchema()
+		    {
+			    ColumnTypeMapping = new Dictionary<string, string>()
+				{
+					{ "_id", BacksDataType.BString},
+					{ "name", BacksDataType.BString},
+					{ "createdAt", BacksDataType.BTime}
+
+				}
+			};
+
+			foreach (var item in data)
+			{
+				columnTypeMapping.ColumnTypeMapping[item.Key]= TypeConverter(item.Value);
+			}
+
+		    return columnTypeMapping;
+	    }
+		
+		private string TypeConverter(object param)
+	    {
+			Type t = param.GetType();
+		    if (t.Equals(typeof(string)))
+			    return BacksDataType.BString;
+
+		    else if (t.Equals(typeof(long)))
+				return BacksDataType.BInt;
+		    else if (t.Equals(typeof(DateTime)))
+			    return BacksDataType.BTime;
+		    else 
+			    return BacksDataType.BString;
+
+		}
+
         //private readonly IRepositoryAsync _repo;
 
         public SchemaHandler(IRepositoryAsync repo)

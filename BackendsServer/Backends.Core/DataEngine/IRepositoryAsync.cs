@@ -35,6 +35,8 @@ namespace Backends.Core.DataEngine
 
 		Task Add_Schema(BacksProjectSchema schema);
 		Task<BacksProjectSchema> GetSchema(string appId);
+		Task Update_Schema(string appId, Dictionary<string, EntitiesSchema> data);
+
 		void CreateCollection(string name, BsonDocument validator);
 		#endregion
 

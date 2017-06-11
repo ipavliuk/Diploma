@@ -50,6 +50,21 @@ namespace Backends.Core.Services
 					return new Tuple<BacksErrorCodes, ObjectsDto>(error, null);
 				}
 
+				//Update schema
+				var schema = await _repo.GetSchema(appId).ConfigureAwait(false);
+				//_Schema, 
+				if (schema.Id == null)
+				{
+					_log.Error("Error updating schema schema");
+					error = BacksErrorCodes.SystemError;
+					return new Tuple<BacksErrorCodes, ObjectsDto>(error, null);
+				}
+
+				var updatedData = schema.EntityColumnTypeMapping;
+				updatedData[name] = _handler.GetSchema(data);
+
+				await _repo.Update_Schema(appId,updatedData).ConfigureAwait(false); 
+
 				obj = new ObjectsDto()
 				{
 					

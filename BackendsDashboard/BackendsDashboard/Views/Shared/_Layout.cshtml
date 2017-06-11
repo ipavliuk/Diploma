@@ -19,21 +19,33 @@
                 @Html.ActionLink("Backends Dashboard", "Index", "Home", new { area = "" }, new { @class = "navbar-brand" })
             </div>
             <div class="navbar-collapse collapse">
-                <ul class="nav navbar-nav">
+                @Html.Partial("_LoginPartial")
+                <ul class="nav navbar-nav navbar-right">
                     <li>@Html.ActionLink("Home", "Index", "Home")</li>
                     <li>@Html.ActionLink("About", "About", "Home")</li>
                     <li>@Html.ActionLink("Contact", "Contact", "Home")</li>
                 </ul>
-                @Html.Partial("_LoginPartial")
+
             </div>
         </div>
     </div>
-    <div class="container body-content">
+    <div class="container" >
         @RenderBody()
         <hr />
-        <footer>
+        
+        @*@Html.Partial("_Footer")*@
+        @*Try it Yourself »*@
+        @*<footer>
             <p>&copy; @DateTime.Now.Year - НУ "Львівська політехніка"</p>
-        </footer>
+        </footer>*@
+        <div id="footer" class="container">
+            <nav class="navbar navbar-default navbar-fixed-bottom">
+                <div class="navbar-inner navbar-content-center">
+                    <p>&copy; @DateTime.Now.Year - НУ "Львівська політехніка"</p>
+                </div>
+            </nav>
+        </div>
+        
     </div>
 
     @Scripts.Render("~/bundles/jquery")

@@ -149,27 +149,40 @@ namespace Backends.Core.Services
 
 			return null;
 		}
-		public ProjectDto GetProject(string projId, out BacksErrorCodes error)
+		public async Task<Tuple<BacksErrorCodes, ProjectDto>> GetProject(string projId)
 		{
-			error = BacksErrorCodes.Ok;
+			var error = BacksErrorCodes.Ok;
+			var response = new ProjectDto();
 			try
 			{
-				var project = _repo.GetProject(projId).Result;
+				var project = await _repo.GetProject(projId).ConfigureAwait(false);
 				if (project == null)
 				{
 					error = BacksErrorCodes.SystemError;
-					return null;
+					return new Tuple<BacksErrorCodes, ProjectDto>(error, null);
 				}
-				var mappedProjetcs = Mapper.Map<Project, ProjectDto>(project);
+
+				response = Mapper.Map<Project, ProjectDto>(project);
 
 				//GetSchema
+
+				var schema = await _repo.GetSchema(projId).ConfigureAwait(false);
+				//_Schema, 
+				if (schema.Id == null)
+				{
+					_log.Error("Error creating schema");
+					error = BacksErrorCodes.SystemError;
+					return new Tuple<BacksErrorCodes, ProjectDto>(error, null);
+				}
+
+				response.Schema = schema;
 			}
 			catch (Exception e)
 			{
 				_log.Error("GetProject exception : ", e);
 				error = BacksErrorCodes.SystemError;
 			}
-			return null;
+			return new Tuple<BacksErrorCodes, ProjectDto>(error, response);
 		}
 
 
