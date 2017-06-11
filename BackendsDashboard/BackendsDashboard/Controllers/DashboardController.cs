@@ -63,7 +63,83 @@ namespace BackendsDashboard.Controllers
 
 					var headers = project.Schema.EntityColumnTypeMapping[name].Select(it=> it.Key).ToList();
 
-					if (name != "_User" || name != "_Sessions")
+					if (name == "_Sessions")
+					{
+						var service = BackendsServerManager.Instance.UserService;
+						var tuple = await service.GetSessions(project.Id);
+						if (tuple.Item1 == BacksErrorCodes.Ok)
+						{
+							foreach (var sessionDto in tuple.Item2)
+							{
+								Type objectType = sessionDto.GetType();
+
+								var properties = objectType.GetProperties();
+								var dictionary = new Dictionary<string, object>();
+								foreach (var header in headers)
+								{
+									var propertyInfo = properties.FirstOrDefault(pr => pr.Name == header);
+									if (propertyInfo != null && propertyInfo.CanRead)
+									{
+										object firstValue = propertyInfo.GetValue(sessionDto);
+										dictionary[header] = firstValue ?? "<null>";
+									}
+									else
+									{
+										if (sessionDto.Data.ContainsKey(header))
+										{
+											dictionary[header] = sessionDto.Data[header];
+										}
+										else
+										{
+											dictionary[header] = "<null>";
+										}
+									}
+								}
+								modelEntityProject.Data.Add(dictionary);
+							}
+
+							modelEntityProject.Keys = headers;
+						}
+					}
+					else if (name == "_User" )
+					{
+						var service =  BackendsServerManager.Instance.UserService;
+						var tuple = await service.GetUsers(project.Id, null);
+						if (tuple.Item1 == BacksErrorCodes.Ok)
+						{
+							foreach (var userDto in tuple.Item2)
+							{
+								Type objectType = userDto.GetType();
+
+								var properties = objectType.GetProperties();
+								var dictionary = new Dictionary<string, object>();
+								foreach (var header in headers)
+								{
+									var propertyInfo = properties.FirstOrDefault(pr => pr.Name == header);
+									if (propertyInfo != null && propertyInfo.CanRead)
+									{
+										object firstValue = propertyInfo.GetValue(userDto);
+										dictionary[header] = firstValue ?? "<null>";
+									}
+									else
+									{
+										if (userDto.Data.ContainsKey(header))
+										{
+											dictionary[header] = userDto.Data[header];
+										}
+										else
+										{
+											dictionary[header] = "<null>";
+										}
+									}
+									
+								}
+								modelEntityProject.Data.Add(dictionary);
+							}
+
+							modelEntityProject.Keys = headers;
+						}
+					}else
 					{
 						var service = BackendsServerManager.Instance.DataService;
 						var tuple = await service.GetEntities(project.Id, name);
@@ -81,13 +157,17 @@ namespace BackendsDashboard.Controllers
 									if (propertyInfo != null && propertyInfo.CanRead)
 									{
 										object firstValue = propertyInfo.GetValue(objectsDto);
-										dictionary[header] = firstValue;
+										dictionary[header] = firstValue ?? "<null>";
 									}
 									else
 									{
 										if (objectsDto.Data.ContainsKey(header))
 										{
 											dictionary[header] = objectsDto.Data[header];
+										}
+										else
+										{
+											dictionary[header] = "<null>";
 										}
 									}
 								}
@@ -96,18 +176,10 @@ namespace BackendsDashboard.Controllers
 
 							modelEntityProject.Keys = headers;
 						}
+
 					}
-					else
-					{
-						var service =  BackendsServerManager.Instance.UserService;
-						var tuple = await service.GetUsers(project.Id, null);
-						if (tuple.Item1 != BacksErrorCodes.Ok)
-						{
-							
-						}
-					}
-					
-					
+
+
 
 
 					//var modelNewProject = new NewProjectViewModel()

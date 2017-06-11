@@ -187,6 +187,21 @@ namespace Backends.Core.DataEngine
 			}
 		}
 
+		public async Task<List<BacksSessions>> GetSessions(string appId)
+		{
+			try
+			{
+				var filter = Builders<BacksSessions>.Filter.Eq(s => s.AppId, appId);
+
+				return await _context.Get_Sessions("_Session_" + appId).Find(filter).ToListAsync();
+			}
+			catch (Exception e)
+			{
+				_log.Error("Exception in GetAllSessions", e);
+				throw;
+			}
+		}
+
 		public async Task RemoveSession(string appId, string sessionId)
 		{
 			try

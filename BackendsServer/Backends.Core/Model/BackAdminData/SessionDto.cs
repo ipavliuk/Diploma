@@ -11,7 +11,7 @@ namespace Backends.Core.Model.BackAdminData
 	public class SessionDto //: BaseData
 	{
 		[DataMember(IsRequired = false, EmitDefaultValue = false)]
-		public string Token { get; set; }
+		public string Id { get; set; }
 		[DataMember(IsRequired = false, EmitDefaultValue = false)]
 		public DateTime? CreatedAt { get; set; }
 		[DataMember(IsRequired = false, EmitDefaultValue = false)]

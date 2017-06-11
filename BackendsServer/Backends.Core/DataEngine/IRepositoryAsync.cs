@@ -60,6 +60,7 @@ namespace Backends.Core.DataEngine
 		Task<BacksSessions> GetSession(string appId, string sessionId);
 		Task UpdateSession(string appId, string sessionId, Dictionary<string, object> data);
 		Task<List<BacksSessions>> GetAllSessions(string appId, string userId);
+		Task<List<BacksSessions>> GetSessions(string appId);
 		Task RemoveSession(string appId, string sessionId);
 
 		Task AddEntity(string appId, BacksObject entity);

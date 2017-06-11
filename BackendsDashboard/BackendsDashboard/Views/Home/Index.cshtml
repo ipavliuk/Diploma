@@ -1,4 +1,5 @@
-﻿@{
+﻿@using BackendsDashboard.Controllers
+@{
     ViewBag.Title = "Home Page";
 }
 
@@ -18,7 +19,8 @@
             створювати структури даних необхідних для проекту. Для того щоб робзпочати роботу потрібно зареєструватися та
             створити проект.
         </p>
-        <p><a href="#" class="btn btn-primary btn-lg">Розпочати роботу</a>
+        <p><a href="@if(!HomeController.IsValid()) {@Url.Action("Login", "Home")} else { @Url.Action("GetAllProjects", "Home");}" 
+                    class="btn btn-primary btn-lg">Розпочати роботу</a>
 
 </div>
 </div>

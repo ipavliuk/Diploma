@@ -284,7 +284,26 @@ namespace Backends.Core.Services
 					return new Tuple<BacksErrorCodes, List<UserDto>>(BacksErrorCodes.UserIsNotFound, null);
 				}
 
-				var mappedUsers = Mapper.Map<List<BacksUsers>, List<UserDto>>(users);
+				//var mappedUsers = Mapper.Map<List<BacksUsers>, List<UserDto>>(users);
+
+				var mappedUsers = new List<UserDto>();
+
+				foreach (var user in users)
+				{
+					//var mappedUser = Mapper.Map<BacksUsers, UserDto>(user);
+					var mappedUser = new UserDto()
+					{
+						Id = user.Id,
+						UserName = user.UserName,
+						Data = user.Data,
+						Email = user.Email,
+						CreatedAt = user.CreatedAt.Value,
+						UpdatedAt = user.UpdatedAt.HasValue ? user.UpdatedAt : null
+					};
+
+					mappedUsers.Add(mappedUser);
+				}
+
 				return new Tuple<BacksErrorCodes, List<UserDto>>(error, mappedUsers);
 			}
 			catch (Exception e)
@@ -376,7 +395,7 @@ namespace Backends.Core.Services
 				
 				var sessionDto = new SessionDto()
 				{
-					Token = session.Id,
+					Id = session.Id,
 					PUser = session.PUser,
 					CreatedAt = session.CreatedAt,
 					ExpiresAt = session.ExpiresAt,
@@ -426,7 +445,7 @@ namespace Backends.Core.Services
 				{
 					var sessionDto = new SessionDto()
 					{
-						Token = item.Id,
+						Id = item.Id,
 						PUser = item.PUser,
 						CreatedAt = item.CreatedAt,
 						ExpiresAt = item.ExpiresAt,
@@ -442,6 +461,45 @@ namespace Backends.Core.Services
 			catch (Exception e)
 			{
 				_log.Error("GetUserSession exception : ", e);
+				error = BacksErrorCodes.SystemError;
+			}
+
+			return null;
+		}
+
+		public async Task<Tuple<BacksErrorCodes, List<SessionDto>>> GetSessions(string appId)
+		{
+			var error = BacksErrorCodes.Ok;
+			try
+			{
+				var sessions = await _repo.GetSessions(appId).ConfigureAwait(false);
+				if (sessions == null)
+				{
+					return new Tuple<BacksErrorCodes, List<SessionDto>>(BacksErrorCodes.SessionIsNotFound, null);
+				}
+
+				var sessionsDto = new List<SessionDto>();
+
+				foreach (var item in sessions)
+				{
+					var sessionDto = new SessionDto()
+					{
+						Id = item.Id,
+						PUser = item.PUser,
+						CreatedAt = item.CreatedAt,
+						ExpiresAt = item.ExpiresAt,
+						Data = item.Data
+					};
+
+					sessionsDto.Add(sessionDto);
+				}
+
+
+				return new Tuple<BacksErrorCodes, List<SessionDto>>(error, sessionsDto);
+			}
+			catch (Exception e)
+			{
+				_log.Error("GetSessions exception : ", e);
 				error = BacksErrorCodes.SystemError;
 			}
 

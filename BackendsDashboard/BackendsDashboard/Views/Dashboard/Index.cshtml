@@ -132,7 +132,7 @@
                             @foreach (var item in Model.SelecteEntity.Data)
                             {
                                 <tr>
-                                    <td>@i</td>
+                                    <td>@(++i)</td>
                                     @foreach (var value in item.Values)
                                     {
                                         <td>@value</td>

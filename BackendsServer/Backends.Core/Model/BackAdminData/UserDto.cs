@@ -26,7 +26,7 @@ namespace Backends.Core.Model.BackAdminData
 		[DataMember(IsRequired = false, EmitDefaultValue = false)]
 		public DateTime CreatedAt { get; set; }
 		[DataMember(IsRequired = false, EmitDefaultValue = false)]
-		public DateTime UpdatedAt { get; set; }
+		public DateTime? UpdatedAt { get; set; }
 		[DataMember(IsRequired = false, EmitDefaultValue = false)]
 		public string SessionId { get; set; }
 

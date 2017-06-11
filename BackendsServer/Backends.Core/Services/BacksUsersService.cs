@@ -323,7 +323,7 @@ namespace Backends.Core.Services
 
 				var sessionDto = new SessionDto()
 				{
-					Token = session.Id,
+					Id = session.Id,
 					PUser = session.PUser,
 					CreatedAt = session.CreatedAt,
 					ExpiresAt = session.ExpiresAt,
@@ -359,7 +359,7 @@ namespace Backends.Core.Services
 				{
 					var sessionDto = new SessionDto()
 					{
-						Token = item.Id,
+						Id = item.Id,
 						PUser = item.PUser,
 						CreatedAt = item.CreatedAt,
 						ExpiresAt = item.ExpiresAt,
