@@ -33,7 +33,7 @@ namespace BackendsServer
                         // hold additional metadata for an API. Version and title are required but you can also provide
                         // additional fields by chaining methods off SingleApiVersion.
                         //
-                        c.SingleApiVersion("v1", "BackendsServer");
+                        c.SingleApiVersion("v1", "BackendsServer REST API ");
 						c.OperationFilter<AddAuthorizationHeader>();
 							
 

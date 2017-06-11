@@ -272,9 +272,28 @@ namespace Backends.Core.Services
 
 			return new Tuple<BacksErrorCodes, UserDto>(error, null);
 		}
-		public void QueryUserData()
+		public async Task<Tuple<BacksErrorCodes, List<UserDto>>> GetUsers(string appId, string query)
 		{
+			var error = BacksErrorCodes.Ok;
+			try
+			{
+				//get User and  update
+				List<BacksUsers> users = await _repo.GetUsers(appId, query).ConfigureAwait(false);
+				if (users == null)
+				{
+					return new Tuple<BacksErrorCodes, List<UserDto>>(BacksErrorCodes.UserIsNotFound, null);
+				}
 
+				var mappedUsers = Mapper.Map<List<BacksUsers>, List<UserDto>>(users);
+				return new Tuple<BacksErrorCodes, List<UserDto>>(error, mappedUsers);
+			}
+			catch (Exception e)
+			{
+				_log.Error("UpdateUser exception : ", e);
+				error = BacksErrorCodes.SystemError;
+			}
+
+			return new Tuple<BacksErrorCodes, List<UserDto>>(error, null);
 		}
 
 		public async Task<BacksErrorCodes> PasswrodReset(string appId, string userId, string pwd/*, out BacksErrorCodes error*/)
@@ -375,6 +394,7 @@ namespace Backends.Core.Services
 
 			return new Tuple<BacksErrorCodes, SessionDto>(error, null);
 		}
+
 
 		public async  Task<Tuple<BacksErrorCodes, List<SessionDto>>> GetUserSessions(string appId, string sessionId/*, out BacksErrorCodes error*/)
 		{

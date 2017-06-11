@@ -25,12 +25,13 @@ namespace Backends.Core.Services
                             {
                                 ColumnTypeMapping = new Dictionary<string, string>()
                                 {
-                                    { "_id", BacksDataType.BString},
-                                    { "userName", BacksDataType.BString},
-                                    { "paswword", BacksDataType.BString},
-                                    { "createdAt", BacksDataType.BTime},
-                                    { "updatedAt", BacksDataType.BTime},
-                                    { "userData", BacksDataType.BObject}
+                                    { "Id", BacksDataType.BString},
+									{ "AppId", BacksDataType.BString},
+									{ "UserName", BacksDataType.BString},
+                                    { "Password", BacksDataType.BString},
+                                    { "CreatedAt", BacksDataType.BTime},
+                                    { "UpdatedAt", BacksDataType.BTime},
+                                    { "Data", BacksDataType.BObject}
                                 }
                             }
                         },
@@ -39,15 +40,16 @@ namespace Backends.Core.Services
                             {
                                 ColumnTypeMapping = new Dictionary<string, string>()
                                 {
-                                    { "_id", BacksDataType.BString},
-                                    { "sessionToken", BacksDataType.BString},
-                                    { "createdAt", BacksDataType.BTime},
-                                    { "updatedAt", BacksDataType.BTime},
-                                    { "expiredAt", BacksDataType.BTime},
-                                    { "installationId", BacksDataType.BString},
-                                    { "sessionData", BacksDataType.BString},
-                                    { "previleges", BacksDataType.BBoolean},
-                                    { "_p_user", BacksDataType.BPointer}
+                                    { "Id", BacksDataType.BString},
+									{ "AppId", BacksDataType.BString},
+									{ "Token", BacksDataType.BString},
+                                    { "CreatedAt", BacksDataType.BTime},
+                                    { "UpdatedAt", BacksDataType.BTime},
+                                    { "ExpiresAt", BacksDataType.BTime},
+                                    //{ "InstallationId", BacksDataType.BString},
+                                    { "Data", BacksDataType.BString},
+                                    //{ "Previleges", BacksDataType.BBoolean},
+                                    { "PUser", BacksDataType.BPointer}
                                 }
                             }
                         },
@@ -56,12 +58,13 @@ namespace Backends.Core.Services
                             {
                                 ColumnTypeMapping = new Dictionary<string, string>()
                                 {
-                                    { "_id", BacksDataType.BString},
-                                    { "name", BacksDataType.BString},
-                                    { "paswword", BacksDataType.BString},
-                                    { "createdAt", BacksDataType.BTime},
-                                    { "updatedAt", BacksDataType.BTime},
-                                    { "userData", BacksDataType.BObject}
+                                    { "Id", BacksDataType.BString},
+									{ "AppId", BacksDataType.BString},
+									{ "Name", BacksDataType.BString},
+                                    { "Paswword", BacksDataType.BString},
+                                    { "CreatedAt", BacksDataType.BTime},
+                                    { "UpdatedAt", BacksDataType.BTime},
+                                    { "Data", BacksDataType.BObject}
                                 }
                             }
                         }
@@ -78,9 +81,9 @@ namespace Backends.Core.Services
 		    {
 			    ColumnTypeMapping = new Dictionary<string, string>()
 				{
-					{ "_id", BacksDataType.BString},
-					{ "name", BacksDataType.BString},
-					{ "createdAt", BacksDataType.BTime}
+					{ "Id", BacksDataType.BString},
+					{ "Name", BacksDataType.BString},
+					{ "CreatedAt", BacksDataType.BTime}
 
 				}
 			};

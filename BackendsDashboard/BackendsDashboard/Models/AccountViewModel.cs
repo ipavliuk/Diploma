@@ -107,4 +107,30 @@ namespace BackendsDashboard.Models
 		}
 		public List<NewProjectViewModel> Projects { get; set; }
 	}
+
+
+	public class EntityDataViewModel
+	{
+		public List<string> Keys { get; set; }
+
+		public List<Dictionary<string, object>> Data { get; set; }
+
+		public EntityDataViewModel()
+		{
+			Keys = new List<string>();
+			Data = new List<Dictionary<string, object>>();
+		}
+	}
+
+	public class MainDashboardProjectModel
+	{
+		public MainDashboardProjectModel()
+		{
+			SelecteEntity = new EntityDataViewModel();
+			CurrentProject = new NewProjectViewModel();
+		}
+		public EntityDataViewModel SelecteEntity { get; set; }
+		public NewProjectViewModel CurrentProject { get; set; }
+	}
+		
 }

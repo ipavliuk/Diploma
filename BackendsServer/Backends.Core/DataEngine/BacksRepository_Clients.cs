@@ -58,7 +58,7 @@ namespace Backends.Core.DataEngine
 			}
 		}
 
-		public async Task<IList<BacksUsers>> GetUsers(string appId, string query)
+		public async Task<List<BacksUsers>> GetUsers(string appId, string query)
 		{
 			try
 			{

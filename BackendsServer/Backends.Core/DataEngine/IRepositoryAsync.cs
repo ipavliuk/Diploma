@@ -49,7 +49,7 @@ namespace Backends.Core.DataEngine
 
 		Task<BacksUsers> Authenticate(string appId, string username, string pwd);
 		Task<BacksUsers> GetUser(string appId, string userId);
-		Task<IList<BacksUsers>> GetUsers(string appId, string query);
+		Task<List<BacksUsers>> GetUsers(string appId, string query);
 		Task UpdateUserPasswrod(string appId, string userId, string password);
 		Task UpdateUserData(string appId, string userId, Dictionary<string, object> data);
 
