@@ -106,7 +106,7 @@ namespace BackendsCore.Test
 			SignUpWithLogin(appId, out user, out session);
 			BacksErrorCodes error = BacksErrorCodes.Ok;
 
-			_service.Logout(appId, user.Id, session.Token, out error);
+			_service.Logout(appId, user.Id, session.Id, out error);
 
 			Assert.AreEqual(error, BacksErrorCodes.Ok,
 					String.Format("Login_Test => failed to logout user with error => {0}", error));
@@ -139,7 +139,7 @@ namespace BackendsCore.Test
 			SignUpWithLogin(appId, out user, out session);
 
 			BacksErrorCodes error = BacksErrorCodes.Ok;
-			_service.RemoveSession(appId, session.Token, out error);
+			_service.RemoveSession(appId, session.Id, out error);
 
 			Assert.AreEqual(error, BacksErrorCodes.Ok,
 				String.Format("Login_Test => failed to logout user with error => {0}", error));
@@ -191,12 +191,12 @@ namespace BackendsCore.Test
 				{"IsExtandable", "true" }
 
 			};
-			_service.UpdateSession(appId, session.Token,fields, out error);
+			_service.UpdateSession(appId, session.Id,fields, out error);
 
 			Assert.AreEqual(error, BacksErrorCodes.Ok,
 				String.Format("UpdateSession_Test => failed to update user without errors => {0}", error));
 
-			SessionDto session1 = _service.GetSession(appId, session.Token, out error);
+			SessionDto session1 = _service.GetSession(appId, session.Id, out error);
 			Assert.AreEqual(error, BacksErrorCodes.Ok,
 				"UpdateSession_Test => Get user error Code failed");
 			Assert.IsNotNull(session1, "UpdateSession_Test => Get user after delete");
@@ -264,10 +264,10 @@ namespace BackendsCore.Test
 			string appId = "592affe8ae1e7843883fd023";
 			SignUpWithLogin(appId, out user, out session);
 			BacksErrorCodes error = BacksErrorCodes.Ok;
-			Assert.IsTrue(_service.ValidateSession(appId, user.Id, session.Token, out error),
+			Assert.IsTrue(_service.ValidateSession(appId, user.Id, session.Id, out error),
 				"ValidateSession_Test => failed to validate signin user and session ");
 
-			Assert.IsTrue(_service.ValidateSession(appId, null, session.Token, out error),
+			Assert.IsTrue(_service.ValidateSession(appId, null, session.Id, out error),
 				"ValidateSession_Test => failed to validate signin session without user");
 
 			RemoveUser(appId, user.Id, out error);
