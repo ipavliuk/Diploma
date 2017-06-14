@@ -31,7 +31,7 @@ namespace Backends.Core.Services
                                     { "Password", BacksDataType.BString},
                                     { "CreatedAt", BacksDataType.BTime},
                                     { "UpdatedAt", BacksDataType.BTime},
-                                    { "Data", BacksDataType.BObject}
+                                    //{ "Data", BacksDataType.BObject}
                                 }
                             }
                         },
@@ -47,7 +47,7 @@ namespace Backends.Core.Services
                                     { "UpdatedAt", BacksDataType.BTime},
                                     { "ExpiresAt", BacksDataType.BTime},
                                     //{ "InstallationId", BacksDataType.BString},
-                                    { "Data", BacksDataType.BString},
+                                    //{ "Data", BacksDataType.BString},
                                     //{ "Previleges", BacksDataType.BBoolean},
                                     { "PUser", BacksDataType.BPointer}
                                 }
@@ -64,7 +64,7 @@ namespace Backends.Core.Services
                                     { "Paswword", BacksDataType.BString},
                                     { "CreatedAt", BacksDataType.BTime},
                                     { "UpdatedAt", BacksDataType.BTime},
-                                    { "Data", BacksDataType.BObject}
+                                    //{ "Data", BacksDataType.BObject}
                                 }
                             }
                         }

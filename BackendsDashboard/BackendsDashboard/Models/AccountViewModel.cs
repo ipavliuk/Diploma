@@ -93,8 +93,8 @@ namespace BackendsDashboard.Models
 		//public long UserCount { get; set; }
 
 		//public long InstallationCount { get; set; }
-
-		public DateTime CreatedAt { get; set; }
+		
+		public string CreatedAt { get; set; }
 
 		public BacksProjectSchema Schema { get; set; }
 	}

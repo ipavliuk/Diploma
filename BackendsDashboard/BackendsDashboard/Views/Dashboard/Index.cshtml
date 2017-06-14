@@ -101,7 +101,7 @@
 
                 <div id="toolbar">
                     <button id="button" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> add row</button>
-                    <button id="button" class="btn btn-primary"><span class="glyphicon glyphicon-refresh"></span> refresh</button>
+                    <button id="button" onclick="location.href='@Url.Action("EntitySelected", "Dashboard",new {name = @ViewBag.selectedEntity })'" class="btn btn-primary"><span class="glyphicon glyphicon-refresh"></span> refresh</button>
                     <button id="button" class="btn btn-primary"><span class="glyphicon glyphicon-filter"></span> filter</button>
                 </div>
             }

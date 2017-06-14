@@ -488,7 +488,9 @@ namespace Backends.Core.Services
 						PUser = item.PUser,
 						CreatedAt = item.CreatedAt,
 						ExpiresAt = item.ExpiresAt,
-						Data = item.Data
+						Data = item.Data,
+						AppId = item.AppId,
+						Token = item.Id
 					};
 
 					sessionsDto.Add(sessionDto);

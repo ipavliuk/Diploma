@@ -23,6 +23,9 @@ namespace Backends.Core.Model.BackAdminData
 		[DataMember(IsRequired = false, EmitDefaultValue = false)]
 		public string PUser { get; set; }
 
+		public string AppId {get; set; }
+		public string Token { get; set; }
+
 		public Dictionary<string, object> Data { get; set; }
 	}
 }

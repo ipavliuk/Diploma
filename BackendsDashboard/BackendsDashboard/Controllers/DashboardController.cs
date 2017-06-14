@@ -9,6 +9,7 @@ using Backends.Core;
 using Backends.Core.Model;
 using Backends.Core.Model.BackAdminData;
 using BackendsDashboard.Models;
+using Newtonsoft.Json.Serialization;
 
 namespace BackendsDashboard.Controllers
 {
@@ -33,7 +34,7 @@ namespace BackendsDashboard.Controllers
 						AppId = project.AppId,
 						ApiKeyAccess = project.ApiKeyAccess,
 						MasterKeyAccess = project.MasterKeyAccess,
-						CreatedAt = project.CreatedAt,
+						CreatedAt = project.CreatedAt.ToString(),
 						EntitiesCount = project.Schema.EntityColumnTypeMapping.Count,
 						UserLogedIn = project.UserCount,
 						Schema = project.Schema
@@ -56,6 +57,7 @@ namespace BackendsDashboard.Controllers
 
 			if (SessionBag.Current.account != null)
 			{
+				ViewBag.selectedEntity = name;
 				ProjectDto project = SessionBag.Current.LoadedProjectModel;
 				var modelEntityProject = new EntityDataViewModel();
 				if (project != null)
@@ -63,7 +65,7 @@ namespace BackendsDashboard.Controllers
 
 					var headers = project.Schema.EntityColumnTypeMapping[name].Select(it=> it.Key).ToList();
 
-					if (name == "_Sessions")
+					if (name == "_Session")
 					{
 						var service = BackendsServerManager.Instance.UserService;
 						var tuple = await service.GetSessions(project.Id);
